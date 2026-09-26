@@ -1,4 +1,4 @@
-LIAFRIK Command Center
+**LIAFRIK Command Center**
 
 Private Enterprise Control Plane for the LIAFRIK SaaS Ecosystem
 
@@ -358,12 +358,12 @@ The project should not contain third-party builder branding, signatures, documen
 
 Official Ecosystem
 
-LIAFRIK
-Founder Vincent Nogue
-Global SaaS Ecosystem
-https://liafrik.com
+**LIAFRIK**
+**Founder**  *Vincent Nogue*
+***Global SaaS Ecosystem***
+*https://liafrik.com*
 
-LIAFRIK Command Center
+**LIAFRIK Command Center**
 Private internal administration and operations platform.
 
 License
