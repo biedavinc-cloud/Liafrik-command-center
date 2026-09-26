@@ -33,6 +33,7 @@ import Security from '@/pages/Security';
 import Incidents from '@/pages/Incidents';
 import ApiLogs from '@/pages/ApiLogs';
 import Rules from '@/pages/Rules';
+import AICommandCenter from '@/pages/AICommandCenter';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -67,6 +68,7 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<AppShell />}>
           <Route path="/" element={<Overview />} />
+          <Route path="/ai" element={<AICommandCenter />} />
           <Route path="/apps" element={<Applications />} />
           <Route path="/apps/new" element={<CreateApplication />} />
           <Route path="/apps/:slug" element={<ApplicationDetail />} />
