@@ -40,6 +40,7 @@ export const TABLE_MAP: Record<string, string> = {
   StaffTask: 'staff_tasks',
   Message: 'messages',
   Conversation: 'conversations',
+  OutboundMessage: 'outbound_messages',
 };
 
 // Columns that are NUMERIC and need string→number conversion on read

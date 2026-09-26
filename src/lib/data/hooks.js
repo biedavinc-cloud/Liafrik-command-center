@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import * as R from './repositories';
 
 const opts = { staleTime: 30_000 };
@@ -120,6 +121,30 @@ export function useCreateConversation() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['conversations'] }),
   });
 }
+
+// Communication hooks
+export const useChannelStatus = () => useQuery({
+  queryKey: ['channelStatus'],
+  queryFn: async () => {
+    const res = await base44.functions.invoke('sendCommunication', { action: 'status' });
+    return res.data;
+  },
+  ...opts,
+});
+export function useSendCommunication() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data) => {
+      const res = await base44.functions.invoke('sendCommunication', { action: 'send', ...data });
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['outboundMessages'] });
+      qc.invalidateQueries({ queryKey: ['audit'] });
+    },
+  });
+}
+export const useOutboundMessages = () => useQuery({ queryKey: ['outboundMessages'], queryFn: () => R.OutboundMessages.list('-created_date', 50), ...opts });
 
 // Staff task hooks
 export function useCreateTask() {

@@ -1,0 +1,95 @@
+{
+  "name": "OutboundMessage",
+  "type": "object",
+  "properties": {
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "resend",
+        "slack",
+        "telegram",
+        "whatsapp",
+        "gmail"
+      ],
+      "description": "Communication channel used to send the message"
+    },
+    "recipient": {
+      "type": "string",
+      "description": "Recipient identifier (email, phone, chat_id, channel)"
+    },
+    "recipient_name": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "sent",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if status is failed"
+    },
+    "application_id": {
+      "type": "string",
+      "description": "Related application if this is client communication"
+    },
+    "application_name": {
+      "type": "string"
+    },
+    "sent_by": {
+      "type": "string"
+    },
+    "sent_by_email": {
+      "type": "string"
+    },
+    "provider_message_id": {
+      "type": "string",
+      "description": "Message ID returned by the provider"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "internal",
+        "external"
+      ],
+      "default": "external"
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "channel",
+    "recipient",
+    "body"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

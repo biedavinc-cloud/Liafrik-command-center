@@ -82,6 +82,7 @@ export const PaymentLinks = neonRepo('PaymentLink');
 export const StaffTasks = neonRepo('StaffTask');
 export const Messages = neonRepo('Message');
 export const Conversations = neonRepo('Conversation');
+export const OutboundMessages = neonRepo('OutboundMessage');
 export const PSP = {
   list: () => base44.functions.invoke('managePsp', { operation: 'list' }).then(r => r.data),
   connect: (data) => base44.functions.invoke('managePsp', { operation: 'connect', ...data }).then(r => r.data),

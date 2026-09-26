@@ -1,16 +1,48 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAuth } from '@/lib/AuthContext';
-import { useConversations, useMessages, useSendMessage, useCreateConversation, useUsers } from '@/lib/data/hooks';
+import { useConversations, useMessages, useSendMessage, useCreateConversation, useUsers, useChannelStatus } from '@/lib/data/hooks';
 import PageHeader from '@/components/kit/PageHeader';
+import Panel from '@/components/kit/Panel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { MessageSquare, Send, Plus, Search } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MessageSquare, Send, Plus, Search, Users, Hash, Mail, Globe } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import ChannelCards from '@/components/communication/ChannelCards';
+import ExternalComposer from '@/components/communication/ExternalComposer';
+import MessageLog from '@/components/communication/MessageLog';
 
 export default function Communication() {
+  const { t } = useT();
+  const [mode, setMode] = useState('internal'); // 'internal' | 'external'
+
+  return (
+    <div className="space-y-4">
+      <PageHeader
+        title="Communication Center"
+        subtitle="Unified internal staff messaging and multi-channel client communication"
+        breadcrumbs={[{ label: 'Communication' }]}
+        actions={
+          <div className="flex rounded-lg border p-0.5">
+            <button onClick={() => setMode('internal')} className={cn('flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-colors', mode === 'internal' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground')}>
+              <Users className="h-3.5 w-3.5" /> Internal (Staff)
+            </button>
+            <button onClick={() => setMode('external')} className={cn('flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-colors', mode === 'external' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground')}>
+              <Globe className="h-3.5 w-3.5" /> External (Clients)
+            </button>
+          </div>
+        }
+      />
+
+      {mode === 'internal' ? <InternalMessaging /> : <ExternalMessaging />}
+    </div>
+  );
+}
+
+// ── Internal Staff Messaging ──────────────────────────────────
+function InternalMessaging() {
   const { t } = useT();
   const { user } = useAuth();
   const { data: conversations = [], isLoading } = useConversations();
@@ -24,42 +56,44 @@ export default function Communication() {
     : conversations;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-7.5rem)]">
-      <PageHeader title={t('communication.title')} subtitle={t('communication.subtitle')} breadcrumbs={[{ label: t('communication.title') }]} />
-      <div className="flex-1 flex gap-4 min-h-0">
-        <div className="w-72 shrink-0 surface flex flex-col">
-          <div className="p-3 border-b space-y-2">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('communication.searchUsers')} className="h-8 pl-8 text-xs" />
-            </div>
-            <Button onClick={() => setNewDialog(true)} size="sm" className="w-full h-8 text-xs"><Plus className="h-3.5 w-3.5 mr-1" />{t('communication.newConversation')}</Button>
+    <div className="flex flex-col gap-4 lg:flex-row lg:h-[calc(100vh-220px)]">
+      <div className="w-full lg:w-72 shrink-0 surface flex flex-col">
+        <div className="p-3 border-b space-y-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('communication.searchUsers')} className="h-8 pl-8 text-xs" />
           </div>
-          <div className="flex-1 overflow-y-auto">
-            {isLoading ? (
-              <div className="flex justify-center py-8"><div className="h-5 w-5 border-2 border-muted border-t-foreground rounded-full animate-spin" /></div>
-            ) : filtered.length === 0 ? (
-              <div className="text-center text-[11px] text-muted-foreground py-8">{t('communication.noConversation')}</div>
-            ) : filtered.map(c => {
-              const other = c.participants?.find(p => p.user_id !== user?.id);
-              const name = c.name || other?.full_name || t('communication.directMessage');
-              return (
-                <button key={c.id} onClick={() => setSelectedId(c.id)} className={cn('w-full text-left px-3 py-2.5 border-b hover:bg-accent/50 transition-colors', selectedId === c.id && 'bg-accent')}>
-                  <div className="text-[12.5px] font-medium truncate">{name}</div>
-                  <div className="text-[10.5px] text-muted-foreground truncate">{c.last_message || '—'}</div>
-                </button>
-              );
-            })}
+          <Button onClick={() => setNewDialog(true)} size="sm" className="w-full h-8 text-xs"><Plus className="h-3.5 w-3.5 mr-1" />{t('communication.newConversation')}</Button>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex justify-center py-8"><div className="h-5 w-5 border-2 border-muted border-t-foreground rounded-full animate-spin" /></div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center text-[11px] text-muted-foreground py-8">{t('communication.noConversation')}</div>
+          ) : filtered.map(c => {
+            const other = c.participants?.find(p => p.user_id !== user?.id);
+            const name = c.name || other?.full_name || t('communication.directMessage');
+            return (
+              <button key={c.id} onClick={() => setSelectedId(c.id)} className={cn('w-full text-left px-3 py-2.5 border-b hover:bg-accent/50 transition-colors', selectedId === c.id && 'bg-accent')}>
+                <div className="flex items-center gap-2">
+                  {c.type === 'group' ? <Users className="h-3 w-3 text-muted-foreground" /> : <Hash className="h-3 w-3 text-muted-foreground" />}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12.5px] font-medium truncate">{name}</div>
+                    <div className="text-[10.5px] text-muted-foreground truncate">{c.last_message || '—'}</div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="flex-1 min-h-0">
+        {selected ? <MessageThread conversation={selected} user={user} /> : (
+          <div className="surface h-full flex flex-col items-center justify-center text-muted-foreground">
+            <MessageSquare className="h-10 w-10 mb-2 opacity-40" />
+            <p className="text-[12px]">{t('communication.noConversationSelected')}</p>
           </div>
-        </div>
-        <div className="flex-1 min-h-0">
-          {selected ? <MessageThread conversation={selected} user={user} /> : (
-            <div className="surface h-full flex flex-col items-center justify-center text-muted-foreground">
-              <MessageSquare className="h-10 w-10 mb-2 opacity-40" />
-              <p className="text-[12px]">{t('communication.noConversationSelected')}</p>
-            </div>
-          )}
-        </div>
+        )}
       </div>
       <NewConversationDialog open={newDialog} onOpenChange={setNewDialog} user={user} />
     </div>
@@ -132,7 +166,7 @@ function NewConversationDialog({ open, onOpenChange, user }) {
 
   const startConversation = async (otherUser) => {
     try {
-      const conv = await createConv.mutateAsync({
+      await createConv.mutateAsync({
         type: 'direct',
         participants: [
           { user_id: user.id, full_name: user.full_name, email: user.email },
@@ -161,5 +195,27 @@ function NewConversationDialog({ open, onOpenChange, user }) {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// ── External Client Communication ──────────────────────────────
+function ExternalMessaging() {
+  const { data: channelData, isLoading } = useChannelStatus();
+  const channels = channelData?.channels || [];
+  const ready = channels.filter((c) => c.configured).length;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 rounded-md border border-brand/30 bg-brand-soft/40 px-4 py-2.5">
+        <Mail className="h-4 w-4 text-brand" />
+        <div className="flex-1">
+          <span className="text-[12px] font-medium">{ready} of {channels.length} channels ready</span>
+          <span className="ml-2 text-[11px] text-muted-foreground">Configure additional channels in Settings → Secrets or Integrations</span>
+        </div>
+      </div>
+      <ChannelCards channels={channels} isLoading={isLoading} />
+      <ExternalComposer />
+      <MessageLog />
+    </div>
   );
 }

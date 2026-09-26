@@ -652,6 +652,31 @@ const DDL: string[] = [
   `CREATE INDEX IF NOT EXISTS idx_staff_tasks_status ON staff_tasks(status)`,
   `CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id, created_date)`,
   `CREATE INDEX IF NOT EXISTS idx_conversations_participants ON conversations(participants)`,
+
+  // Outbound messages — multi-channel client communication audit trail
+  `CREATE TABLE IF NOT EXISTS outbound_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    channel TEXT NOT NULL,
+    recipient TEXT NOT NULL,
+    recipient_name TEXT,
+    subject TEXT,
+    body TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',
+    error TEXT,
+    application_id TEXT,
+    application_name TEXT,
+    sent_by TEXT,
+    sent_by_email TEXT,
+    provider_message_id TEXT,
+    direction TEXT DEFAULT 'external',
+    correlation_id TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_outbound_messages_created ON outbound_messages(created_date DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_outbound_messages_channel ON outbound_messages(channel)`,
+  `CREATE INDEX IF NOT EXISTS idx_outbound_messages_app ON outbound_messages(application_id)`,
 ];
 
 export default async function(req: Request): Promise<Response> {

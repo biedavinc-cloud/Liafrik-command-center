@@ -39,7 +39,6 @@ import PaymentLinks from '@/pages/PaymentLinks';
 import Communication from '@/pages/Communication';
 import Tasks from '@/pages/Tasks';
 import RevenueAnalytics from '@/pages/RevenueAnalytics';
-import InternalMessaging from '@/pages/InternalMessaging';
 import AutomationEngine from '@/pages/AutomationEngine';
 import DatabaseInspector from '@/pages/DatabaseInspector';
 import HealthMonitor from '@/pages/HealthMonitor';
@@ -106,7 +105,6 @@ const AuthenticatedApp = () => {
           <Route path="/revenue" element={<Revenue />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/revenue-analytics" element={<RevenueAnalytics />} />
-          <Route path="/internal-messaging" element={<InternalMessaging />} />
           <Route path="/automation-engine" element={<AutomationEngine />} />
           <Route path="/database-inspector" element={<DatabaseInspector />} />
           <Route path="/health-monitor" element={<HealthMonitor />} />
