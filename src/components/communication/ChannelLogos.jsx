@@ -3,7 +3,8 @@ import { Mail, Send, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const CHANNEL_LOGOS = {
-  gmail: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/03a37a68b_a1d14ba7881740c8c3e428a75132a2ae.png',
+  resend: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/e955bddc7_resend-icon-black.svg',
+  gmail: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/2d412a3a6_google_mail_gmail_logo_icon_159346.webp',
   slack: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/0bd3d4116_Slack_Mark_Web.png',
   telegram: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/0e8acf38f_telegram-logo-on-transparent-isolated-background-free-vector.jpg',
   whatsapp: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/866010786_whatsapp-logo-7.png',
@@ -14,23 +15,23 @@ export const CHANNEL_LOGOS = {
   twilio: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/d493ba5be_TWLO-f7d1b0a6.png',
 };
 
-const FALLBACK_ICONS = { email: Mail, resend: Send };
+const FALLBACK_ICONS = { email: Mail };
 
 export default function ChannelLogo({ channel, className, size = 'md' }) {
   const logo = CHANNEL_LOGOS[channel];
   const Fallback = FALLBACK_ICONS[channel] || MessageSquare;
-  const sizeCls = size === 'sm' ? 'h-5 w-5' : size === 'lg' ? 'h-10 w-10' : 'h-7 w-7';
-  const iconSize = size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-3.5 w-3.5';
+  const sizeCls = size === 'sm' ? 'h-8 w-8' : size === 'lg' ? 'h-14 w-14' : 'h-12 w-12';
+  const iconSize = size === 'sm' ? 'h-4 w-4' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
 
   if (logo) {
     return (
-      <div className={cn('flex items-center justify-center rounded-lg bg-white p-1', sizeCls, className)}>
+      <div className={cn('flex items-center justify-center rounded-lg bg-white p-0.5 shrink-0', sizeCls, className)}>
         <img src={logo} alt={channel} className="h-full w-full object-contain" />
       </div>
     );
   }
   return (
-    <div className={cn('flex items-center justify-center rounded-lg bg-brand-soft text-brand', sizeCls, className)}>
+    <div className={cn('flex items-center justify-center rounded-lg bg-brand-soft text-brand p-1', sizeCls, className)}>
       <Fallback className={iconSize} />
     </div>
   );

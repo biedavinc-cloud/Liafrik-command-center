@@ -16,6 +16,7 @@ export default function ExternalComposer() {
   const { data: channelData, isLoading: loadingChannels } = useChannelStatus();
   const sendComm = useSendCommunication();
   const channels = channelData?.channels || [];
+  const composableChannels = channels.filter(c => c.composable !== false);
 
   const [form, setForm] = useState({
     channel: 'email',
@@ -42,7 +43,7 @@ export default function ExternalComposer() {
   };
 
   const selectedChannel = channels.find((c) => c.key === form.channel);
-  const isConfigured = selectedChannel?.configured;
+  const isConfigured = selectedChannel?.configured && selectedChannel?.composable !== false;
   const isChatType = selectedChannel?.type === 'chat' || selectedChannel?.type === 'sms';
   const isVideoType = selectedChannel?.type === 'video';
 
@@ -69,7 +70,7 @@ export default function ExternalComposer() {
             <Select value={form.channel} onValueChange={(v) => setForm({ ...form, channel: v })}>
               <SelectTrigger className="h-9 text-[12px]"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {channels.map((c) => (
+                {composableChannels.map((c) => (
                   <SelectItem key={c.key} value={c.key} disabled={!c.configured} className="text-[12px]">
                     <span className="flex items-center gap-1.5">
                       {c.name}

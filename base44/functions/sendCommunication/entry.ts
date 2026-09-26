@@ -19,8 +19,8 @@ const CHANNEL_DEFS = [
     ] },
   { key: 'slack', name: 'Slack', type: 'chat', auth: 'oauth', connector: 'slackbot',
     description: 'Post messages to Slack channels via bot connector' },
-  { key: 'teams', name: 'Microsoft Teams', type: 'chat', auth: 'oauth', connector: 'microsoft_teams',
-    description: 'Post messages to Teams channels via connector' },
+  { key: 'teams', name: 'Microsoft Teams', type: 'chat', auth: 'oauth', connector: 'microsoft_teams', composable: false,
+    description: 'Post messages to Teams channels via connector (automation only)' },
   { key: 'telegram', name: 'Telegram', type: 'chat', auth: 'secret',
     description: 'Send instant messages via Telegram Bot API',
     fields: [{ key: 'bot_token', label: 'Bot Token', type: 'password', required: true }] },
@@ -37,8 +37,8 @@ const CHANNEL_DEFS = [
       { key: 'auth_token', label: 'Auth Token', type: 'password', required: true },
       { key: 'from_number', label: 'From Number (+123...)', type: 'text', required: true },
     ] },
-  { key: 'meet', name: 'Google Meet', type: 'video', auth: 'oauth', connector: 'googlemeet',
-    description: 'Send Google Meet meeting links via email' },
+  { key: 'meet', name: 'Google Meet', type: 'video', auth: 'oauth', connector: 'googlemeet', composable: false,
+    description: 'Create Google Meet video meetings via connector (automation only)' },
 ];
 
 function maskValue(val: string): string {
@@ -109,6 +109,7 @@ export default async function(req: Request): Promise<Response> {
           name: def.name,
           type: def.type,
           auth: def.auth,
+          composable: def.composable !== false,
           description: def.description,
           fields: def.fields || [],
           connector: def.connector || null,
@@ -288,7 +289,7 @@ export default async function(req: Request): Promise<Response> {
           try { ({ accessToken } = await base44.asServiceRole.connectors.getConnection('gmail')); }
           catch (_) { throw new Error('Gmail connector not authorized. Configure it in the Communication Center.'); }
           const emailLines = [`To: ${recipient}`, `Subject: ${subject || 'Message from Liafrik'}`, 'Content-Type: text/plain; charset=utf-8', '', text].join('\r\n');
-          const encoded = btoa(unescape(encodeURIComponent(emailLines)));
+          const encoded = btoa(unescape(encodeURIComponent(emailLines))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
           const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
@@ -310,7 +311,7 @@ export default async function(req: Request): Promise<Response> {
               saveToSentItems: false,
             }),
           });
-          if (!res.ok) { const d = await res.json(); throw new Error(d.error?.message || 'Outlook API error'); }
+          if (!res.ok) { const t = await res.text(); try { throw new Error(JSON.parse(t).error?.message || 'Outlook API error'); } catch (e) { if (e instanceof SyntaxError) throw new Error('Outlook API error'); throw e; } }
           providerId = 'sent';
         }
         else if (channel === 'slack') {
@@ -320,7 +321,7 @@ export default async function(req: Request): Promise<Response> {
           const res = await fetch('https://slack.com/api/chat.postMessage', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ channel: recipient, text: `${subject ? `*${subject}*\n\n` : ''}${text}` }),
+            body: JSON.stringify({ channel: recipient, text: `${subject ? `*${subject}*\n\n` : ''}${text}`, username: 'Liafrik', icon_emoji: ':rocket:' }),
           });
           const d = await res.json();
           if (!d.ok) throw new Error(d.error || 'Slack API error');
