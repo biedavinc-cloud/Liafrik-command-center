@@ -6,7 +6,7 @@ import PageHeader from '@/components/kit/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Loader2, Check, X, Zap, Settings as SettingsIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import Image from '@/components/ui/image';
+import { Image } from '@/components/ui/image';
 
 export default function PspCenter() {
   const { t } = useT();
