@@ -1,10 +1,13 @@
-import { LayoutDashboard, AppWindow, Users, ShieldCheck, KeyRound, BarChart3, Wallet, Activity, Bell, ScrollText, Plug, Layers, Shield, Settings, AlertTriangle, Code, Zap } from 'lucide-react';
+import { LayoutDashboard, AppWindow, Users, ShieldCheck, KeyRound, BarChart3, Wallet, Activity, Bell, ScrollText, Plug, Layers, Shield, Settings, AlertTriangle, Code, Zap, Sparkles } from 'lucide-react';
 
 // `planned` modules render the roadmap view until their phase ships.
 export const NAV_SECTIONS = [
   { group: 'core', items: [
     { key: 'overview', path: '/', icon: LayoutDashboard },
     { key: 'applications', path: '/apps', icon: AppWindow },
+  ] },
+  { group: 'ai', items: [
+    { key: 'ai', path: '/ai', icon: Sparkles },
   ] },
   { group: 'identity', items: [
     { key: 'users', path: '/users', icon: Users },
