@@ -96,6 +96,47 @@ export function useCreatePaymentLink() {
   return useMutation({ mutationFn: (data) => R.createPaymentLink(data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['paymentLinks'] }); qc.invalidateQueries({ queryKey: ['audit'] }); } });
 }
 
+// Communication hooks
+export const useMessages = (conversationId) => useQuery({
+  queryKey: ['messages', conversationId],
+  queryFn: () => R.Messages.filter({ conversation_id: conversationId }, 'created_date'),
+  enabled: !!conversationId,
+  ...opts,
+});
+export function useSendMessage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => R.Messages.create(data),
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: ['messages', variables.conversation_id] });
+      qc.invalidateQueries({ queryKey: ['conversations'] });
+    },
+  });
+}
+export function useCreateConversation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => R.Conversations.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['conversations'] }),
+  });
+}
+
+// Staff task hooks
+export function useUpdateTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...data }) => R.StaffTasks.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['staffTasks'] }),
+  });
+}
+export function useDeleteTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => R.StaffTasks.remove(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['staffTasks'] }),
+  });
+}
+
 export function useAppBySlug(slug) {
   const q = useApplications();
   return { ...q, data: q.data?.find((a) => a.slug === slug) };
