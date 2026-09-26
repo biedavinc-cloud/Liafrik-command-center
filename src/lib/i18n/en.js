@@ -1,11 +1,11 @@
 const en = {
   brand: { short: 'Command Center', sub: 'Command Center' },
-  navGroup: { core: 'Overview', identity: 'Identity', insights: 'Insights', operations: 'Operations', system: 'System' },
+  navGroup: { core: 'Overview', ai: 'AI', identity: 'Identity', insights: 'Insights', operations: 'Operations', system: 'System' },
   nav: {
     overview: 'Overview', applications: 'Applications', users: 'Users', administrators: 'Administrators', roles: 'Roles & Permissions',
     analytics: 'Analytics', revenue: 'Revenue', monitoring: 'Monitoring', notifications: 'Notifications', audit: 'Audit Logs',
     integrations: 'API & Integrations', environments: 'Environments', security: 'Security', settings: 'Settings',
-    incidents: 'Incidents', 'api-logs': 'API Logs', rules: 'Automation Rules',
+    incidents: 'Incidents', 'api-logs': 'API Logs', rules: 'Automation Rules', ai: 'AI Command Center',
   },
   shell: { collapse: 'Collapse' },
   common: {
@@ -394,6 +394,25 @@ const en = {
     language: 'Language', founderMode: 'Founder mode', founderModeDesc: 'Show advanced technical information',
     system: 'System', systemSub: 'Platform status and infrastructure',
     safeMode: 'Safe mode', on: 'On', off: 'Off',
+  },
+  ai: {
+    commandCenter: 'AI Command Center',
+    subtitle: 'Intelligent assistant for application management, operations, and security',
+    assistant: 'Assistant', ops: 'AIOps', incidents: 'Incident Commander', security: 'Security Copilot',
+    onboarding: 'Onboarding', governance: 'Governance',
+    providerConnected: 'AI Provider Connected', providerNotConnected: 'AI Provider Not Connected',
+    providerNotConnectedDesc: 'Configure GEMINI_API_KEY in Secrets to enable AI capabilities.',
+    askQuestion: 'Ask about your applications, incidents, deployments, or system status...',
+    send: 'Send', runAnalysis: 'Run Analysis', analyze: 'Analyze',
+    analyzeIncident: 'Analyze Incident', analyzeApp: 'Analyze Application',
+    selectIncident: 'Select an incident...', selectApplication: 'Select an application...',
+    thinking: 'AI is analyzing...', noResults: 'No analysis yet. Run an analysis to begin.',
+    safetyNotice: 'All AI recommendations require human action. No actions are executed automatically.',
+    correlationId: 'Correlation', tokensUsed: 'Tokens', latency: 'Latency', dataSources: 'Data Sources',
+    governanceLog: 'AI Activity Log', governanceEmpty: 'No AI activity recorded yet.',
+    requestType: 'Type', prompt: 'Prompt', response: 'Response', provider: 'Provider',
+    model: 'Model', error: 'Error', user: 'User', timestamp: 'Timestamp',
+    focus: 'Focus (optional)', focusPlaceholder: 'e.g., error rates, latency, specific application...',
   },
 };
 

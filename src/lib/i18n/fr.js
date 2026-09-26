@@ -1,11 +1,12 @@
 const fr = {
   brand: { short: 'Centre de commande', sub: 'Centre de commande' },
-  navGroup: { core: 'Vue d’ensemble', identity: 'Identités', insights: 'Pilotage', operations: 'Opérations', system: 'Système' },
+  navGroup: { core: 'Vue d’ensemble', ai: 'IA', identity: 'Identités', insights: 'Pilotage', operations: 'Opérations', system: 'Système' },
   nav: {
     overview: 'Vue d’ensemble', applications: 'Applications', users: 'Utilisateurs', administrators: 'Administrateurs', roles: 'Rôles et permissions',
     analytics: 'Analyses', revenue: 'Revenus', monitoring: 'Supervision', notifications: 'Notifications', audit: 'Journal d’audit',
     integrations: 'API et intégrations', environments: 'Environnements', security: 'Sécurité', settings: 'Paramètres',
     incidents: 'Incidents', 'api-logs': 'Journaux API', rules: 'Règles d’automatisation',
+    ai: 'Centre de commande IA',
   },
   shell: { collapse: 'Réduire' },
   common: {
@@ -394,6 +395,25 @@ const fr = {
     language: 'Langue', founderMode: 'Mode fondateur', founderModeDesc: 'Afficher les informations techniques avancées',
     system: 'Système', systemSub: 'Statut de la plateforme et infrastructure',
     safeMode: 'Mode sans échec', on: 'Activé', off: 'Désactivé',
+  },
+  ai: {
+    commandCenter: 'Centre de commande IA',
+    subtitle: 'Assistant intelligent pour la gestion d’applications, les opérations et la sécurité',
+    assistant: 'Assistant', ops: 'AIOps', incidents: 'Commandant d’incident', security: 'Copilote de sécurité',
+    onboarding: 'Intégration', governance: 'Gouvernance',
+    providerConnected: 'Fournisseur IA connecté', providerNotConnected: 'Fournisseur IA non connecté',
+    providerNotConnectedDesc: 'Configurez GEMINI_API_KEY dans les Secrets pour activer les capacités IA.',
+    askQuestion: 'Posez une question sur vos applications, incidents, déploiements ou état du système...',
+    send: 'Envoyer', runAnalysis: 'Lancer l’analyse', analyze: 'Analyser',
+    analyzeIncident: 'Analyser l’incident', analyzeApp: 'Analyser l’application',
+    selectIncident: 'Sélectionner un incident...', selectApplication: 'Sélectionner une application...',
+    thinking: 'L’IA analyse...', noResults: 'Aucune analyse pour l’instant. Lancez une analyse pour commencer.',
+    safetyNotice: 'Toutes les recommandations de l’IA nécessitent une action humaine. Aucune action n’est exécutée automatiquement.',
+    correlationId: 'Corrélation', tokensUsed: 'Jetons', latency: 'Latence', dataSources: 'Sources de données',
+    governanceLog: 'Journal d’activité IA', governanceEmpty: 'Aucune activité IA enregistrée.',
+    requestType: 'Type', prompt: 'Invite', response: 'Réponse', provider: 'Fournisseur',
+    model: 'Modèle', error: 'Erreur', user: 'Utilisateur', timestamp: 'Horodatage',
+    focus: 'Focus (optionnel)', focusPlaceholder: 'ex. taux d’erreurs, latence, application spécifique...',
   },
 };
 
