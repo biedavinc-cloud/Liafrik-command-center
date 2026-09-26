@@ -415,6 +415,21 @@ const fr = {
     model: 'Modèle', error: 'Erreur', user: 'Utilisateur', timestamp: 'Horodatage',
     focus: 'Focus (optionnel)', focusPlaceholder: 'ex. taux d’erreurs, latence, application spécifique...',
   },
+  branding: {
+    title: 'Image de marque', subtitle: 'Identité de l’organisation, logo et identité visuelle.',
+    organizationName: 'Nom de l’organisation', organizationDescription: 'Description de l’organisation',
+    logo: 'Logo (clair)', logoDark: 'Logo (variante sombre)', favicon: 'Favicon', primaryColor: 'Couleur principale',
+    upload: 'Téléverser', uploading: 'Téléversement…', remove: 'Retirer', saved: 'Image de marque enregistrée',
+    hint: 'Téléversez un logo pour remplacer le badge par défaut dans la barre latérale et l’en-tête.',
+  },
+  currency: {
+    title: 'Devise & Taux de change', subtitle: 'Devise de base et taux de change en temps réel d’un fournisseur réel.',
+    baseCurrency: 'Devise de base', sync: 'Synchroniser les taux', syncing: 'Synchronisation…',
+    lastSync: 'Dernière synchronisation', rateCount: '{n} taux', rates: 'Taux en direct',
+    convert: 'Convertisseur de devises', from: 'De', to: 'Vers', amount: 'Montant', result: 'Résultat',
+    syncSuccess: 'Taux de change synchronisés avec succès', syncError: 'Échec de la synchronisation des taux de change',
+    provider: 'Fournisseur', notSynced: 'Pas encore synchronisé — cliquez sur Synchroniser pour récupérer les taux.',
+  },
 };
 
 export default fr;

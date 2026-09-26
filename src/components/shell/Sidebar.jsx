@@ -3,14 +3,20 @@ import { NavLink } from 'react-router-dom';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n/I18nProvider';
+import { useBranding } from '@/lib/data/hooks';
 import { NAV_SECTIONS } from './navConfig';
 
 export default function Sidebar({ collapsed, onToggle, onNavigate }) {
   const { t } = useT();
+  const { data: branding } = useBranding();
   return (
     <aside className={cn('flex h-full flex-col bg-ink text-slate-300 transition-[width] duration-300 ease-out', collapsed ? 'w-[68px]' : 'w-[244px]')}>
       <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-white/[0.06] px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand text-[13px] font-bold text-ink">L</div>
+        {branding?.logo_url ? (
+          <img src={branding.logo_url} alt="Liafrik" className="h-8 w-8 shrink-0 rounded-md object-contain" />
+        ) : (
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand text-[13px] font-bold text-ink">L</div>
+        )}
         {!collapsed && (
           <div className="min-w-0 leading-tight">
             <div className="text-[12.5px] font-semibold tracking-[0.14em] text-white">LIAFRIK</div>

@@ -7,6 +7,8 @@ import { roleOfUser } from '@/lib/rbac';
 import PageHeader from '@/components/kit/PageHeader';
 import Panel from '@/components/kit/Panel';
 import { Cpu, Globe, ShieldAlert, User, Mail, KeyRound } from 'lucide-react';
+import BrandingPanel from '@/components/settings/BrandingPanel';
+import CurrencyPanel from '@/components/settings/CurrencyPanel';
 
 export default function Settings() {
   const { t, lang, setLang } = useT();
@@ -82,6 +84,8 @@ export default function Settings() {
           </div>
         </div>
       </Panel>
+      {user?.role === 'admin' && <BrandingPanel />}
+      {user?.role === 'admin' && <CurrencyPanel />}
     </div>
   );
 }

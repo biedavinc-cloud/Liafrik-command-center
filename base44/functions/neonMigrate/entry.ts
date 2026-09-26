@@ -481,6 +481,57 @@ const DDL: string[] = [
   )`,
   `CREATE INDEX IF NOT EXISTS idx_ai_activities_created ON ai_activities(created_date DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_ai_activities_user ON ai_activities(user_id)`,
+
+  // Branding — singleton (key='global')
+  `CREATE TABLE IF NOT EXISTS branding (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    key TEXT NOT NULL UNIQUE DEFAULT 'global',
+    organization_name TEXT,
+    organization_description TEXT,
+    logo_url TEXT,
+    logo_dark_url TEXT,
+    favicon_url TEXT,
+    primary_color TEXT,
+    updated_by TEXT
+  )`,
+
+  // Currency exchange rates — live rates fetched from a real provider
+  `CREATE TABLE IF NOT EXISTS currency_rates (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    base_currency TEXT NOT NULL,
+    rates JSONB NOT NULL,
+    provider TEXT,
+    fetched_at TIMESTAMPTZ DEFAULT now()
+  )`,
+
+  // Staff profiles — extended user data (photo, job title, department, etc.)
+  `CREATE TABLE IF NOT EXISTS staff_profiles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    user_id TEXT NOT NULL UNIQUE,
+    photo_url TEXT,
+    job_title TEXT,
+    department TEXT,
+    phone TEXT,
+    timezone TEXT DEFAULT 'Asia/Dubai',
+    notification_prefs JSONB DEFAULT '{}'::jsonb
+  )`,
+
+  // Add base_currency to system_states
+  `ALTER TABLE system_states ADD COLUMN IF NOT EXISTS base_currency TEXT DEFAULT 'USD'`,
+
+  `CREATE INDEX IF NOT EXISTS idx_branding_key ON branding(key)`,
+  `CREATE INDEX IF NOT EXISTS idx_currency_rates_base ON currency_rates(base_currency)`,
+  `CREATE INDEX IF NOT EXISTS idx_currency_rates_fetched ON currency_rates(fetched_at DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_staff_profiles_user ON staff_profiles(user_id)`,
 ];
 
 export default async function(req: Request): Promise<Response> {

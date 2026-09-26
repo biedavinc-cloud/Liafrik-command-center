@@ -32,6 +32,9 @@ export const TABLE_MAP: Record<string, string> = {
   AutomationRule: 'automation_rules',
   Invitation: 'invitations',
   AiActivity: 'ai_activities',
+  Branding: 'branding',
+  CurrencyRate: 'currency_rates',
+  StaffProfile: 'staff_profiles',
 };
 
 // Columns that are NUMERIC and need string→number conversion on read
@@ -61,6 +64,8 @@ export const JSONB_COLUMNS: Record<string, string[]> = {
   webhook_configs: ['deliveries'],
   invitations: ['assignments', 'permissions'],
   ai_activities: ['data_sources'],
+  currency_rates: ['rates'],
+  staff_profiles: ['notification_prefs'],
 };
 
 function isJsonbColumn(table: string, col: string): boolean {

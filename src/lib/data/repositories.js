@@ -64,3 +64,10 @@ export const AppConfigs = neonRepo('AppConfig');
 export const AutomationRules = neonRepo('AutomationRule');
 export const Invitations = neonRepo('Invitation');
 export const Users = base44Repo('User');
+export const CurrencyRates = neonRepo('CurrencyRate');
+export const StaffProfiles = neonRepo('StaffProfile');
+export const Branding = {
+  get: () => base44.functions.invoke('manageBranding', { operation: 'get' }).then(r => r.data),
+  set: (data) => base44.functions.invoke('manageBranding', { operation: 'set', ...data }).then(r => r.data),
+};
+export const syncRates = (base) => base44.functions.invoke('syncExchangeRates', { base }).then(r => r.data);

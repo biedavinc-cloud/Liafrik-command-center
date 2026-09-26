@@ -55,6 +55,17 @@ export const useAppConfigs = (appId, env) => useQuery({ queryKey: ['appConfigs',
 export const useAutomationRules = () => useQuery({ queryKey: ['automationRules'], queryFn: () => R.AutomationRules.list('name'), ...opts });
 export const useInvitations = () => useQuery({ queryKey: ['invitations'], queryFn: () => R.Invitations.list('-created_date'), ...opts });
 export const useUsers = () => useQuery({ queryKey: ['users'], queryFn: () => R.Users.list('full_name'), ...opts });
+export const useBranding = () => useQuery({ queryKey: ['branding'], queryFn: () => R.Branding.get(), ...opts });
+export const useCurrencyRates = (base = 'USD') => useQuery({ queryKey: ['currencyRates', base], queryFn: () => R.CurrencyRates.filter({ base_currency: base }, '-fetched_at', 1), ...opts });
+export const useStaffProfile = (userId) => useQuery({ queryKey: ['staffProfile', userId], queryFn: () => R.StaffProfiles.filter({ user_id: userId }, '-created_date', 1), enabled: !!userId, ...opts });
+export function useSetBranding() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (data) => R.Branding.set(data), onSuccess: () => qc.invalidateQueries({ queryKey: ['branding'] }) });
+}
+export function useSyncRates() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (base) => R.syncRates(base), onSuccess: () => qc.invalidateQueries({ queryKey: ['currencyRates'] }) });
+}
 
 export function useAppBySlug(slug) {
   const q = useApplications();

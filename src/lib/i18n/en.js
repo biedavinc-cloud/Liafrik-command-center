@@ -414,6 +414,21 @@ const en = {
     model: 'Model', error: 'Error', user: 'User', timestamp: 'Timestamp',
     focus: 'Focus (optional)', focusPlaceholder: 'e.g., error rates, latency, specific application...',
   },
+  branding: {
+    title: 'Branding', subtitle: 'Organization identity, logo and visual identity.',
+    organizationName: 'Organization name', organizationDescription: 'Organization description',
+    logo: 'Logo (light)', logoDark: 'Logo (dark variant)', favicon: 'Favicon', primaryColor: 'Primary color',
+    upload: 'Upload', uploading: 'Uploading…', remove: 'Remove', saved: 'Branding saved',
+    hint: 'Upload a logo to replace the default badge in the sidebar and header.',
+  },
+  currency: {
+    title: 'Currency & Exchange Rates', subtitle: 'Base currency and live exchange rates from a real provider.',
+    baseCurrency: 'Base currency', sync: 'Sync rates', syncing: 'Syncing…',
+    lastSync: 'Last synced', rateCount: '{n} rates', rates: 'Live rates',
+    convert: 'Currency converter', from: 'From', to: 'To', amount: 'Amount', result: 'Result',
+    syncSuccess: 'Exchange rates synced successfully', syncError: 'Failed to sync exchange rates',
+    provider: 'Provider', notSynced: 'Not synced yet — click Sync to fetch live rates.',
+  },
 };
 
 export default en;
