@@ -87,7 +87,11 @@ export const AuthProvider = ({ children }) => {
       // Platform admins (role === 'admin', i.e. the founder) bypass this check.
       if (currentUser.role !== 'admin') {
         try {
-          const admins = await base44.entities.Administrator.filter({ email: currentUser.email });
+          const admins = await base44.functions.invoke('neonData', {
+            entity: 'Administrator',
+            operation: 'filter',
+            query: { email: currentUser.email }
+          }).then(r => r.data);
           const validAdmin = admins.find(a => a.status === 'active' || a.status === 'pending');
           if (!validAdmin) {
             // User is authenticated but not in the administrator registry — deny access
