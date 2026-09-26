@@ -9,6 +9,7 @@ import Panel from '@/components/kit/Panel';
 import { Cpu, Globe, ShieldAlert, User, Mail, KeyRound } from 'lucide-react';
 import BrandingPanel from '@/components/settings/BrandingPanel';
 import CurrencyPanel from '@/components/settings/CurrencyPanel';
+import ProfilePanel from '@/components/settings/ProfilePanel';
 
 export default function Settings() {
   const { t, lang, setLang } = useT();
@@ -20,31 +21,7 @@ export default function Settings() {
   return (
     <div className="space-y-5">
       <PageHeader title={t('settingsPage.title')} subtitle={t('settingsPage.subtitle')} breadcrumbs={[{ label: t('settingsPage.title') }]} />
-      <Panel title={t('settingsPage.profile')} subtitle={t('settingsPage.profileSub')}>
-        <div className="grid max-w-md gap-3">
-          <div className="flex items-center gap-3 rounded-md border p-3">
-            <User className="h-4 w-4 text-muted-foreground" />
-            <div className="flex-1">
-              <div className="text-[10.5px] uppercase tracking-[0.08em] text-muted-foreground">{t('settingsPage.name')}</div>
-              <div className="text-[12.5px] font-medium">{user?.full_name || '—'}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 rounded-md border p-3">
-            <Mail className="h-4 w-4 text-muted-foreground" />
-            <div className="flex-1">
-              <div className="text-[10.5px] uppercase tracking-[0.08em] text-muted-foreground">{t('settingsPage.email')}</div>
-              <div className="text-[12.5px] font-medium">{user?.email}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 rounded-md border p-3">
-            <KeyRound className="h-4 w-4 text-muted-foreground" />
-            <div className="flex-1">
-              <div className="text-[10.5px] uppercase tracking-[0.08em] text-muted-foreground">{t('settingsPage.role')}</div>
-              <div className="text-[12.5px] font-medium">{t(`roles.${roleOfUser(user)}`)}</div>
-            </div>
-          </div>
-        </div>
-      </Panel>
+      <ProfilePanel />
       <Panel title={t('settingsPage.preferences')} subtitle={t('settingsPage.preferencesSub')}>
         <div className="grid max-w-md gap-4">
           <div className="space-y-1.5">

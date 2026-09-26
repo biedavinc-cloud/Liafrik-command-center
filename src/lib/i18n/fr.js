@@ -422,6 +422,12 @@ const fr = {
     upload: 'Téléverser', uploading: 'Téléversement…', remove: 'Retirer', saved: 'Image de marque enregistrée',
     hint: 'Téléversez un logo pour remplacer le badge par défaut dans la barre latérale et l’en-tête.',
   },
+  profile: {
+    title: 'Mon profil', subtitle: 'Vos informations personnelles et photo.',
+    photo: 'Photo de profil', fullName: 'Nom complet', jobTitle: 'Titre du poste', department: 'Département',
+    phone: 'Téléphone', timezone: 'Fuseau horaire', email: 'E-mail', role: 'Rôle',
+    saved: 'Profil enregistré', uploadPhoto: 'Téléverser une photo', removePhoto: 'Retirer la photo',
+  },
   currency: {
     title: 'Devise & Taux de change', subtitle: 'Devise de base et taux de change en temps réel d’un fournisseur réel.',
     baseCurrency: 'Devise de base', sync: 'Synchroniser les taux', syncing: 'Synchronisation…',

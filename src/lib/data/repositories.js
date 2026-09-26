@@ -71,3 +71,7 @@ export const Branding = {
   set: (data) => base44.functions.invoke('manageBranding', { operation: 'set', ...data }).then(r => r.data),
 };
 export const syncRates = (base) => base44.functions.invoke('syncExchangeRates', { base }).then(r => r.data);
+export const MyProfile = {
+  get: () => base44.functions.invoke('manageProfile', { operation: 'get' }).then(r => r.data),
+  set: (data) => base44.functions.invoke('manageProfile', { operation: 'set', ...data }).then(r => r.data),
+};

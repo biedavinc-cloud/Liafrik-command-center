@@ -421,6 +421,12 @@ const en = {
     upload: 'Upload', uploading: 'Uploading…', remove: 'Remove', saved: 'Branding saved',
     hint: 'Upload a logo to replace the default badge in the sidebar and header.',
   },
+  profile: {
+    title: 'My profile', subtitle: 'Your personal information and photo.',
+    photo: 'Profile photo', fullName: 'Full name', jobTitle: 'Job title', department: 'Department',
+    phone: 'Phone', timezone: 'Timezone', email: 'Email', role: 'Role',
+    saved: 'Profile saved', uploadPhoto: 'Upload photo', removePhoto: 'Remove photo',
+  },
   currency: {
     title: 'Currency & Exchange Rates', subtitle: 'Base currency and live exchange rates from a real provider.',
     baseCurrency: 'Base currency', sync: 'Sync rates', syncing: 'Syncing…',

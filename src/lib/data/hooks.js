@@ -66,6 +66,11 @@ export function useSyncRates() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: (base) => R.syncRates(base), onSuccess: () => qc.invalidateQueries({ queryKey: ['currencyRates'] }) });
 }
+export const useMyProfile = () => useQuery({ queryKey: ['myProfile'], queryFn: () => R.MyProfile.get(), ...opts });
+export function useSetMyProfile() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (data) => R.MyProfile.set(data), onSuccess: () => qc.invalidateQueries({ queryKey: ['myProfile'] }) });
+}
 
 export function useAppBySlug(slug) {
   const q = useApplications();

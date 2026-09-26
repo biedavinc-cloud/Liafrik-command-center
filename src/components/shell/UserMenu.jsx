@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { roleOfUser } from '@/lib/rbac';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useFounderMode } from '@/lib/hooks/useFounderMode';
-import { useSystemState, useAction } from '@/lib/data/hooks';
+import { useSystemState, useAction, useMyProfile } from '@/lib/data/hooks';
 import { enableSafeMode, disableSafeMode } from '@/lib/services/systemState';
 
 export default function UserMenu() {
@@ -19,6 +19,7 @@ export default function UserMenu() {
   const { enabled: founderMode, toggle: toggleFounderMode } = useFounderMode();
   const isSuperAdmin = roleOfUser(user) === 'superadmin';
   const { data: sysStates = [] } = useSystemState();
+  const { data: profile } = useMyProfile();
   const safeModeActive = sysStates[0]?.safe_mode_enabled || false;
   const safeModeAction = useAction(
     async () => safeModeActive ? disableSafeMode(user?.email) : enableSafeMode('Activated by SuperAdmin', user?.email),
@@ -31,7 +32,11 @@ export default function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2.5 rounded-md py-1 pl-1 pr-2 transition-colors hover:bg-muted">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[10.5px] font-semibold text-primary-foreground">{initials}</span>
+          {profile?.photo_url ? (
+            <img src={profile.photo_url} alt={name} className="h-7 w-7 rounded-full object-cover" />
+          ) : (
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[10.5px] font-semibold text-primary-foreground">{initials}</span>
+          )}
           <span className="hidden text-left leading-tight lg:block">
             <span className="block max-w-[120px] truncate text-[12px] font-medium">{name}</span>
             <span className="block text-[10.5px] text-brand">{role}</span>
