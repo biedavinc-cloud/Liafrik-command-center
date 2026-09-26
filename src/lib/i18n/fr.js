@@ -1,12 +1,13 @@
 const fr = {
   brand: { short: 'Centre de commande', sub: 'Centre de commande' },
-  navGroup: { core: 'Vue d’ensemble', ai: 'IA', identity: 'Identités', insights: 'Pilotage', operations: 'Opérations', system: 'Système' },
+  navGroup: { core: 'Vue d’ensemble', ai: 'IA', payments: 'Paiements', identity: 'Identités', insights: 'Pilotage', operations: 'Opérations', system: 'Système' },
   nav: {
     overview: 'Vue d’ensemble', applications: 'Applications', users: 'Utilisateurs', administrators: 'Administrateurs', roles: 'Rôles et permissions',
     analytics: 'Analyses', revenue: 'Revenus', monitoring: 'Supervision', notifications: 'Notifications', audit: 'Journal d’audit',
     integrations: 'API et intégrations', environments: 'Environnements', security: 'Sécurité', settings: 'Paramètres',
     incidents: 'Incidents', 'api-logs': 'Journaux API', rules: 'Règles d’automatisation',
     ai: 'Centre de commande IA',
+    'psp-center': 'Centre PSP', 'payment-links': 'Liens de paiement', communication: 'Communication', tasks: 'Tâches',
   },
   shell: { collapse: 'Réduire' },
   common: {
@@ -427,6 +428,23 @@ const fr = {
     photo: 'Photo de profil', fullName: 'Nom complet', jobTitle: 'Titre du poste', department: 'Département',
     phone: 'Téléphone', timezone: 'Fuseau horaire', email: 'E-mail', role: 'Rôle',
     saved: 'Profil enregistré', uploadPhoto: 'Téléverser une photo', removePhoto: 'Retirer la photo',
+  },
+  psp: {
+    title: 'Centre PSP', subtitle: 'Gestion centralisée des prestataires de paiement.',
+    currencies: 'Devises', countries: 'Pays', capabilities: 'Capacités',
+    connect: 'Connecter', disconnect: 'Déconnecter', enable: 'Activer', disable: 'Désactiver',
+    test: 'Tester', configureSecret: 'Configurer le secret',
+    secretConfigured: 'Secret configuré:', secretNotConfigured: 'Secret non configuré — définissez-le dans Paramètres → Secrets',
+    testPassed: 'Test de connexion réussi', testFailed: 'Échec du test de connexion',
+    createLink: 'Créer un lien', createLinkTitle: 'Créer un lien de paiement',
+    application: 'Application', customer: 'E-mail client', customerName: 'Nom du client',
+    amount: 'Montant', currency: 'Devise', provider: 'Prestataire', description: 'Description',
+    reference: 'Référence (optionnel)', expiration: 'Expiration (optionnel)',
+    generate: 'Générer le lien', linkCreated: 'Lien de paiement créé',
+    linkEmpty: 'Aucun lien de paiement', linkEmptyBody: 'Créez un lien de paiement pour collecter un paiement.',
+    copyLink: 'Copier le lien', copied: 'Lien copié', openLink: 'Ouvrir le lien',
+    sentTo: 'Envoyé à', status: 'Statut', created: 'Créé',
+    paymentLinks: 'Liens de paiement', noConnected: 'Aucun PSP connecté. Connectez un prestataire dans le Centre PSP.',
   },
   currency: {
     title: 'Devise & Taux de change', subtitle: 'Devise de base et taux de change en temps réel d’un fournisseur réel.',

@@ -1,11 +1,12 @@
 const en = {
   brand: { short: 'Command Center', sub: 'Command Center' },
-  navGroup: { core: 'Overview', ai: 'AI', identity: 'Identity', insights: 'Insights', operations: 'Operations', system: 'System' },
+  navGroup: { core: 'Overview', ai: 'AI', payments: 'Payments', identity: 'Identity', insights: 'Insights', operations: 'Operations', system: 'System' },
   nav: {
     overview: 'Overview', applications: 'Applications', users: 'Users', administrators: 'Administrators', roles: 'Roles & Permissions',
     analytics: 'Analytics', revenue: 'Revenue', monitoring: 'Monitoring', notifications: 'Notifications', audit: 'Audit Logs',
     integrations: 'API & Integrations', environments: 'Environments', security: 'Security', settings: 'Settings',
     incidents: 'Incidents', 'api-logs': 'API Logs', rules: 'Automation Rules', ai: 'AI Command Center',
+    'psp-center': 'PSP Center', 'payment-links': 'Payment Links', communication: 'Communication', tasks: 'Tasks',
   },
   shell: { collapse: 'Collapse' },
   common: {
@@ -426,6 +427,23 @@ const en = {
     photo: 'Profile photo', fullName: 'Full name', jobTitle: 'Job title', department: 'Department',
     phone: 'Phone', timezone: 'Timezone', email: 'Email', role: 'Role',
     saved: 'Profile saved', uploadPhoto: 'Upload photo', removePhoto: 'Remove photo',
+  },
+  psp: {
+    title: 'PSP Center', subtitle: 'Centralized payment provider management with a provider-agnostic abstraction.',
+    currencies: 'Currencies', countries: 'Countries', capabilities: 'Capabilities',
+    connect: 'Connect', disconnect: 'Disconnect', enable: 'Enable', disable: 'Disable',
+    test: 'Test', configureSecret: 'Configure secret',
+    secretConfigured: 'Secret configured:', secretNotConfigured: 'Secret not configured — set it in Settings → Secrets',
+    testPassed: 'Connection test passed', testFailed: 'Connection test failed',
+    createLink: 'Create Payment Link', createLinkTitle: 'Create Payment Link',
+    application: 'Application', customer: 'Customer email', customerName: 'Customer name',
+    amount: 'Amount', currency: 'Currency', provider: 'Provider', description: 'Description',
+    reference: 'Reference (optional)', expiration: 'Expiration (optional)',
+    generate: 'Generate link', linkCreated: 'Payment link created',
+    linkEmpty: 'No payment links', linkEmptyBody: 'Create a payment link to collect a payment from a customer.',
+    copyLink: 'Copy link', copied: 'Link copied', openLink: 'Open link',
+    sentTo: 'Sent to', status: 'Status', created: 'Created',
+    paymentLinks: 'Payment Links', noConnected: 'No PSP is connected. Connect a provider in the PSP Center first.',
   },
   currency: {
     title: 'Currency & Exchange Rates', subtitle: 'Base currency and live exchange rates from a real provider.',

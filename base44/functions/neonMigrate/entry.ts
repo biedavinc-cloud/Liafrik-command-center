@@ -532,6 +532,121 @@ const DDL: string[] = [
   `CREATE INDEX IF NOT EXISTS idx_currency_rates_base ON currency_rates(base_currency)`,
   `CREATE INDEX IF NOT EXISTS idx_currency_rates_fetched ON currency_rates(fetched_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_staff_profiles_user ON staff_profiles(user_id)`,
+
+  // Payment providers (PSPs) — configured payment service providers
+  `CREATE TABLE IF NOT EXISTS payment_providers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    provider TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    environment TEXT DEFAULT 'production',
+    status TEXT DEFAULT 'not_connected',
+    capabilities JSONB DEFAULT '[]',
+    supported_currencies JSONB DEFAULT '[]',
+    supported_countries JSONB DEFAULT '[]',
+    credential_hint TEXT,
+    webhook_secret_hint TEXT,
+    merchant_id TEXT,
+    enabled BOOLEAN DEFAULT false,
+    last_tested TIMESTAMPTZ,
+    last_test_result TEXT,
+    configured_by TEXT,
+    correlation_id TEXT
+  )`,
+
+  // Payment links — generated payment links associated with customers/apps
+  `CREATE TABLE IF NOT EXISTS payment_links (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    application_id TEXT,
+    application_name TEXT,
+    provider TEXT NOT NULL,
+    customer_email TEXT,
+    customer_name TEXT,
+    amount NUMERIC NOT NULL,
+    currency TEXT DEFAULT 'USD',
+    description TEXT,
+    reference TEXT,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    link_url TEXT,
+    provider_reference TEXT,
+    status TEXT DEFAULT 'pending',
+    expiration TIMESTAMPTZ,
+    sent_at TIMESTAMPTZ,
+    sent_to TEXT,
+    paid_at TIMESTAMPTZ,
+    correlation_id TEXT,
+    created_by TEXT,
+    created_by_email TEXT
+  )`,
+
+  // Staff tasks — lightweight operational follow-ups
+  `CREATE TABLE IF NOT EXISTS staff_tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    title TEXT NOT NULL,
+    description TEXT,
+    assignee_id TEXT,
+    assignee_name TEXT,
+    priority TEXT DEFAULT 'medium',
+    status TEXT DEFAULT 'open',
+    due_date TIMESTAMPTZ,
+    application_id TEXT,
+    application_name TEXT,
+    customer TEXT,
+    payment_reference TEXT,
+    notes TEXT,
+    correlation_id TEXT
+  )`,
+
+  // Internal messages — staff-to-staff communication
+  `CREATE TABLE IF NOT EXISTS messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    conversation_id TEXT NOT NULL,
+    sender_id TEXT NOT NULL,
+    sender_name TEXT,
+    sender_email TEXT,
+    sender_photo_url TEXT,
+    body TEXT NOT NULL,
+    attachments JSONB DEFAULT '[]',
+    mentions JSONB DEFAULT '[]',
+    read_by JSONB DEFAULT '[]',
+    correlation_id TEXT
+  )`,
+
+  // Conversations — direct messages, group chats, app channels
+  `CREATE TABLE IF NOT EXISTS conversations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    type TEXT DEFAULT 'direct',
+    name TEXT,
+    application_id TEXT,
+    application_name TEXT,
+    participants JSONB DEFAULT '[]',
+    last_message TEXT,
+    last_message_at TIMESTAMPTZ,
+    last_sender_id TEXT,
+    correlation_id TEXT
+  )`,
+
+  `CREATE INDEX IF NOT EXISTS idx_payment_providers_provider ON payment_providers(provider)`,
+  `CREATE INDEX IF NOT EXISTS idx_payment_links_created ON payment_links(created_date DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_payment_links_app ON payment_links(application_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_staff_tasks_assignee ON staff_tasks(assignee_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_staff_tasks_status ON staff_tasks(status)`,
+  `CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id, created_date)`,
+  `CREATE INDEX IF NOT EXISTS idx_conversations_participants ON conversations(participants)`,
 ];
 
 export default async function(req: Request): Promise<Response> {

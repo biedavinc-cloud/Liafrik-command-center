@@ -75,3 +75,16 @@ export const MyProfile = {
   get: () => base44.functions.invoke('manageProfile', { operation: 'get' }).then(r => r.data),
   set: (data) => base44.functions.invoke('manageProfile', { operation: 'set', ...data }).then(r => r.data),
 };
+export const PaymentProviders = neonRepo('PaymentProvider');
+export const PaymentLinks = neonRepo('PaymentLink');
+export const StaffTasks = neonRepo('StaffTask');
+export const Messages = neonRepo('Message');
+export const Conversations = neonRepo('Conversation');
+export const PSP = {
+  list: () => base44.functions.invoke('managePsp', { operation: 'list' }).then(r => r.data),
+  connect: (data) => base44.functions.invoke('managePsp', { operation: 'connect', ...data }).then(r => r.data),
+  disconnect: (data) => base44.functions.invoke('managePsp', { operation: 'disconnect', ...data }).then(r => r.data),
+  toggle: (data) => base44.functions.invoke('managePsp', { operation: 'toggle', ...data }).then(r => r.data),
+  test: (data) => base44.functions.invoke('managePsp', { operation: 'test', ...data }).then(r => r.data),
+};
+export const createPaymentLink = (data) => base44.functions.invoke('createPaymentLink', data).then(r => r.data);

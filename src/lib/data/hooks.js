@@ -71,6 +71,29 @@ export function useSetMyProfile() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: (data) => R.MyProfile.set(data), onSuccess: () => qc.invalidateQueries({ queryKey: ['myProfile'] }) });
 }
+export const usePSPs = () => useQuery({ queryKey: ['psps'], queryFn: () => R.PSP.list(), ...opts });
+export const usePaymentLinks = () => useQuery({ queryKey: ['paymentLinks'], queryFn: () => R.PaymentLinks.list('-created_date'), ...opts });
+export const useStaffTasks = () => useQuery({ queryKey: ['staffTasks'], queryFn: () => R.StaffTasks.list('-created_date'), ...opts });
+export const useConversations = () => useQuery({ queryKey: ['conversations'], queryFn: () => R.Conversations.list('-last_message_at'), ...opts });
+export function usePSPAction() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ action, ...data }) => {
+      switch (action) {
+        case 'connect': return R.PSP.connect(data);
+        case 'disconnect': return R.PSP.disconnect(data);
+        case 'toggle': return R.PSP.toggle(data);
+        case 'test': return R.PSP.test(data);
+        default: throw new Error('Unknown PSP action');
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['psps'] }),
+  });
+}
+export function useCreatePaymentLink() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (data) => R.createPaymentLink(data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['paymentLinks'] }); qc.invalidateQueries({ queryKey: ['audit'] }); } });
+}
 
 export function useAppBySlug(slug) {
   const q = useApplications();

@@ -35,6 +35,11 @@ export const TABLE_MAP: Record<string, string> = {
   Branding: 'branding',
   CurrencyRate: 'currency_rates',
   StaffProfile: 'staff_profiles',
+  PaymentProvider: 'payment_providers',
+  PaymentLink: 'payment_links',
+  StaffTask: 'staff_tasks',
+  Message: 'messages',
+  Conversation: 'conversations',
 };
 
 // Columns that are NUMERIC and need string→number conversion on read
@@ -48,6 +53,8 @@ export const NUMERIC_COLUMNS: Record<string, string[]> = {
   notification_rules: ['fire_count'],
   api_logs: ['status', 'latency_ms'],
   automation_rules: ['fire_count'],
+  payment_links: ['amount'],
+  staff_tasks: [],
 };
 
 // Columns that are JSONB (arrays/objects) and need JSON.stringify on write
@@ -66,6 +73,10 @@ export const JSONB_COLUMNS: Record<string, string[]> = {
   ai_activities: ['data_sources'],
   currency_rates: ['rates'],
   staff_profiles: ['notification_prefs'],
+  payment_providers: ['capabilities', 'supported_currencies', 'supported_countries'],
+  payment_links: ['metadata'],
+  messages: ['attachments', 'mentions', 'read_by'],
+  conversations: ['participants'],
 };
 
 function isJsonbColumn(table: string, col: string): boolean {

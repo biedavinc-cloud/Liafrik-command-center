@@ -34,6 +34,8 @@ import Incidents from '@/pages/Incidents';
 import ApiLogs from '@/pages/ApiLogs';
 import Rules from '@/pages/Rules';
 import AICommandCenter from '@/pages/AICommandCenter';
+import PspCenter from '@/pages/PspCenter';
+import PaymentLinks from '@/pages/PaymentLinks';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -69,6 +71,8 @@ const AuthenticatedApp = () => {
         <Route element={<AppShell />}>
           <Route path="/" element={<Overview />} />
           <Route path="/ai" element={<AICommandCenter />} />
+          <Route path="/payments" element={<PspCenter />} />
+          <Route path="/payment-links" element={<PaymentLinks />} />
           <Route path="/apps" element={<Applications />} />
           <Route path="/apps/new" element={<CreateApplication />} />
           <Route path="/apps/:slug" element={<ApplicationDetail />} />

@@ -1,0 +1,99 @@
+{
+  "name": "PaymentProvider",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "type": "string",
+      "description": "PSP key (nexapay, korapay, stripe, paystack, flutterwave, payunit, paddle)"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "sandbox",
+        "production"
+      ],
+      "default": "production"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "not_connected",
+        "configured",
+        "error",
+        "disabled"
+      ],
+      "default": "not_connected"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supported_currencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supported_countries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "credential_hint": {
+      "type": "string",
+      "description": "Masked hint of the API key (last 4 chars)"
+    },
+    "webhook_secret_hint": {
+      "type": "string"
+    },
+    "merchant_id": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "last_tested": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_test_result": {
+      "type": "string"
+    },
+    "configured_by": {
+      "type": "string"
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider",
+    "display_name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
