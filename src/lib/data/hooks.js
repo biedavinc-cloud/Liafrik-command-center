@@ -122,6 +122,13 @@ export function useCreateConversation() {
 }
 
 // Staff task hooks
+export function useCreateTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => R.StaffTasks.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['staffTasks'] }),
+  });
+}
 export function useUpdateTask() {
   const qc = useQueryClient();
   return useMutation({
