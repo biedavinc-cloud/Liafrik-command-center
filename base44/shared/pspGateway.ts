@@ -17,6 +17,7 @@ export interface PSPProvider {
   webhook_secret_env?: string;
   docs_url?: string;
   color?: string;
+  logo_url?: string;
 }
 
 export const PSP_PROVIDERS: Record<string, PSPProvider> = {
@@ -30,6 +31,7 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     secret_key_env: 'PSP_NEXAPAY_API_KEY',
     webhook_secret_env: 'PSP_NEXAPAY_WEBHOOK_SECRET',
     color: '#6366f1',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/6910565b4_1Nexapay.png',
   },
   korapay: {
     key: 'korapay',
@@ -41,6 +43,7 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     secret_key_env: 'PSP_KORAPAY_SECRET_KEY',
     webhook_secret_env: 'PSP_KORAPAY_WEBHOOK_SECRET',
     color: '#0ea5e9',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/a641fe066_korapay-logo-png_seeklogo-490134.png',
   },
   stripe: {
     key: 'stripe',
@@ -53,6 +56,7 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     webhook_secret_env: 'PSP_STRIPE_WEBHOOK_SECRET',
     docs_url: 'https://stripe.com/docs/api',
     color: '#635bff',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/1cdb778a2_1685814539stripe-icon-png.png',
   },
   paystack: {
     key: 'paystack',
@@ -65,6 +69,7 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     webhook_secret_env: 'PSP_PAYSTACK_WEBHOOK_SECRET',
     docs_url: 'https://paystack.com/docs/api',
     color: '#0fbf7e',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/8d33d468e_Paystack-Logo-Vectorsvg-.png',
   },
   flutterwave: {
     key: 'flutterwave',
@@ -77,6 +82,7 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     webhook_secret_env: 'PSP_FLUTTERWAVE_WEBHOOK_SECRET',
     docs_url: 'https://developer.flutterwave.com',
     color: '#f9a826',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/723d815a8_flutterwavelogo.jpg',
   },
   payunit: {
     key: 'payunit',
@@ -88,6 +94,7 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     secret_key_env: 'PSP_PAYUNIT_API_KEY',
     webhook_secret_env: 'PSP_PAYUNIT_WEBHOOK_SECRET',
     color: '#e63946',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/8f1428a7e_payunit-logo.png',
   },
   paddle: {
     key: 'paddle',
@@ -100,6 +107,20 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     webhook_secret_env: 'PSP_PADDLE_WEBHOOK_SECRET',
     docs_url: 'https://developer.paddle.com',
     color: '#e91e63',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/16dd8dd7a_Paddle-Logo-1.png',
+  },
+  cinetpay: {
+    key: 'cinetpay',
+    display_name: 'CinetPay',
+    description: 'West and Central African payment gateway',
+    capabilities: ['payment_links', 'payment_creation', 'payment_status', 'refunds', 'webhooks', 'customer_metadata'],
+    supported_currencies: ['XOF', 'XAF', 'USD', 'EUR', 'GHS', 'NGN', 'KES', 'ZAR'],
+    supported_countries: ['CI', 'SN', 'CM', 'BF', 'ML', 'TG', 'BJ', 'NE', 'GH', 'NG'],
+    secret_key_env: 'PSP_CINETPAY_API_KEY',
+    webhook_secret_env: 'PSP_CINETPAY_WEBHOOK_SECRET',
+    docs_url: 'https://docs.cinetpay.com',
+    color: '#f24a22',
+    logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/57f5a6e4c_icon.webp',
   },
 };
 

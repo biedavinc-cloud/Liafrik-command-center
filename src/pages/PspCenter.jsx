@@ -6,6 +6,7 @@ import PageHeader from '@/components/kit/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Loader2, Check, X, Zap, Settings as SettingsIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import Image from '@/components/ui/image';
 
 export default function PspCenter() {
   const { t } = useT();
@@ -36,9 +37,15 @@ export default function PspCenter() {
           {psps.map((psp) => (
             <div key={psp.key} className="surface p-5 space-y-3">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: psp.color }}>
-                  {psp.display_name[0]}
-                </div>
+                {psp.logo_url ? (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white border p-1.5 overflow-hidden">
+                    <Image src={psp.logo_url} alt={psp.display_name} fittingType="fit" className="h-full w-full" />
+                  </div>
+                ) : (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: psp.color }}>
+                    {psp.display_name[0]}
+                  </div>
+                )}
                 <div className="min-w-0">
                   <div className="text-[13px] font-semibold">{psp.display_name}</div>
                   <div className="text-[11px] text-muted-foreground line-clamp-2">{psp.description}</div>
