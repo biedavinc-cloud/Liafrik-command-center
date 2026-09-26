@@ -1,0 +1,92 @@
+{
+  "name": "SystemState",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Singleton key, always 'global'"
+    },
+    "safe_mode_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "safe_mode_activated_by": {
+      "type": "string"
+    },
+    "safe_mode_activated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "safe_mode_reason": {
+      "type": "string"
+    },
+    "safe_mode_correlation_id": {
+      "type": "string"
+    },
+    "infrastructure_status": {
+      "type": "string",
+      "enum": [
+        "not_connected",
+        "configured",
+        "connected",
+        "error"
+      ],
+      "default": "not_connected"
+    },
+    "neon_status": {
+      "type": "string",
+      "enum": [
+        "not_connected",
+        "configured",
+        "connected",
+        "error"
+      ],
+      "default": "not_connected"
+    },
+    "github_status": {
+      "type": "string",
+      "enum": [
+        "not_connected",
+        "configured",
+        "connected",
+        "error"
+      ],
+      "default": "not_connected"
+    },
+    "cloudflare_status": {
+      "type": "string",
+      "enum": [
+        "not_connected",
+        "configured",
+        "connected",
+        "error"
+      ],
+      "default": "not_connected"
+    },
+    "is_demo": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "key"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

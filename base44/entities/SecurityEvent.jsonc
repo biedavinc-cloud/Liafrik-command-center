@@ -1,0 +1,79 @@
+{
+  "name": "SecurityEvent",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "failed_login",
+        "permission_changed",
+        "api_key_rotated",
+        "admin_created",
+        "admin_suspended",
+        "session_revoked",
+        "suspicious_api",
+        "mfa_disabled",
+        "config_changed",
+        "secret_accessed"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "actor": {
+      "type": "string"
+    },
+    "ip": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "application_id": {
+      "type": "string"
+    },
+    "application_name": {
+      "type": "string"
+    },
+    "correlation_id": {
+      "type": "string"
+    },
+    "is_demo": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "type",
+    "severity"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

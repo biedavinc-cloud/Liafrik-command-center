@@ -1,0 +1,56 @@
+{
+  "name": "Integration",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "source_control",
+        "edge",
+        "database",
+        "payments",
+        "email",
+        "analytics"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "not_connected",
+        "configured",
+        "pending",
+        "error"
+      ],
+      "default": "not_connected"
+    },
+    "adapter": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider",
+    "category"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
