@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 14% 97.5%;
+    --foreground: 222 30% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 30% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 30% 11%;
+    --primary: 222 35% 11%;
+    --primary-foreground: 40 20% 98%;
+    --secondary: 40 12% 94%;
+    --secondary-foreground: 222 30% 11%;
+    --muted: 40 12% 95%;
+    --muted-foreground: 220 9% 44%;
+    --accent: 40 14% 94%;
+    --accent-foreground: 222 30% 11%;
+    --destructive: 356 72% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 40 10% 89%;
+    --input: 40 10% 87%;
+    --ring: 38 62% 46%;
+    --brand: 38 62% 46%;
+    --brand-soft: 38 70% 95%;
+    --sidebar-bg: 222 32% 7%;
+    --chart-1: 38 62% 46%;
+    --chart-2: 222 35% 20%;
+    --chart-3: 160 45% 38%;
+    --chart-4: 214 60% 50%;
+    --chart-5: 340 50% 50%;
+    --radius: 0.45rem;
+    --font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  /* Dark theme tokens — prepared for the appearance setting */
+  .dark {
+    --background: 222 30% 7%;
+    --foreground: 40 20% 96%;
+    --card: 222 28% 10%;
+    --card-foreground: 40 20% 96%;
+    --popover: 222 28% 10%;
+    --popover-foreground: 40 20% 96%;
+    --primary: 40 20% 96%;
+    --primary-foreground: 222 35% 11%;
+    --secondary: 222 20% 15%;
+    --secondary-foreground: 40 20% 96%;
+    --muted: 222 20% 14%;
+    --muted-foreground: 220 10% 62%;
+    --accent: 222 20% 15%;
+    --accent-foreground: 40 20% 96%;
+    --destructive: 356 60% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 18% 18%;
+    --input: 222 18% 20%;
+    --ring: 38 62% 52%;
+    --brand: 38 62% 52%;
+    --brand-soft: 38 30% 16%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html { font-size: 14px; }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: 'tnum' 0;
+  }
+  ::selection { background: hsl(var(--brand) / 0.2); }
+}
+
+/* Brand utilities (explicit so they never depend on config reloads) */
+.bg-ink { background-color: hsl(var(--sidebar-bg)); }
+.text-ink { color: hsl(var(--sidebar-bg)); }
+.bg-brand { background-color: hsl(var(--brand)); }
+.text-brand { color: hsl(var(--brand)); }
+.border-brand { border-color: hsl(var(--brand)); }
+.border-brand\/30 { border-color: hsl(var(--brand) / 0.3); }
+.border-brand\/50 { border-color: hsl(var(--brand) / 0.5); }
+.bg-brand-soft { background-color: hsl(var(--brand-soft)); }
+.bg-brand-soft\/40 { background-color: hsl(var(--brand-soft) / 0.4); }
+.bg-brand-soft\/60 { background-color: hsl(var(--brand-soft) / 0.6); }
+.hover\:text-brand:hover { color: hsl(var(--brand)); }
+.group:hover .group-hover\:text-brand { color: hsl(var(--brand)); }
+.after\:bg-brand::after { background-color: hsl(var(--brand)); }
+
+@layer components {
+  .surface {
+    @apply rounded-lg border bg-card;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  }
+  .label-caps {
+    @apply text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground;
+  }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { scrollbar-width: none; }
+}
