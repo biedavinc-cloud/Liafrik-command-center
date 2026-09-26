@@ -14,7 +14,7 @@ export default function Sidebar({ collapsed, onToggle, onNavigate }) {
         {!collapsed && (
           <div className="min-w-0 leading-tight">
             <div className="text-[12.5px] font-semibold tracking-[0.14em] text-white">LIAFRIK</div>
-            <div className="text-[9.5px] font-medium uppercase tracking-[0.2em] text-slate-400">{t('brand.sub')}</div>
+            <div className="text-[9.5px] font-medium tracking-[0.2em] text-slate-400">{t('brand.sub')}</div>
           </div>
         )}
       </div>
