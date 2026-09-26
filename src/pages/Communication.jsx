@@ -210,7 +210,7 @@ function ExternalMessaging() {
         <Mail className="h-4 w-4 text-brand" />
         <div className="flex-1">
           <span className="text-[12px] font-medium">{ready} of {channels.length} channels ready</span>
-          <span className="ml-2 text-[11px] text-muted-foreground">Configure additional channels in Settings → Secrets or Integrations</span>
+          <span className="ml-2 text-[11px] text-muted-foreground">Click the ⚙ settings icon on any channel card to configure it</span>
         </div>
       </div>
       <ChannelCards channels={channels} isLoading={isLoading} />

@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { Send, Loader2, AlertTriangle } from 'lucide-react';
-import ChannelLogo from './ChannelLogos';
 import { cn } from '@/lib/utils';
 
 export default function ExternalComposer() {
@@ -45,7 +44,6 @@ export default function ExternalComposer() {
   const selectedChannel = channels.find((c) => c.key === form.channel);
   const isConfigured = selectedChannel?.configured && selectedChannel?.composable !== false;
   const isChatType = selectedChannel?.type === 'chat' || selectedChannel?.type === 'sms';
-  const isVideoType = selectedChannel?.type === 'video';
 
   const recipientLabel = () => {
     if (form.channel === 'slack') return '(channel #name or ID)';
