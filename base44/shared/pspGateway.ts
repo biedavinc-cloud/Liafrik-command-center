@@ -15,6 +15,7 @@ export interface PSPProvider {
   supported_countries: string[];
   secret_key_env: string;
   webhook_secret_env?: string;
+  site_id_env?: string;
   docs_url?: string;
   color?: string;
   logo_url?: string;
@@ -113,13 +114,14 @@ export const PSP_PROVIDERS: Record<string, PSPProvider> = {
     key: 'cinetpay',
     display_name: 'CinetPay',
     description: 'West and Central African payment gateway',
-    capabilities: ['payment_links', 'payment_creation', 'payment_status', 'refunds', 'webhooks', 'customer_metadata'],
-    supported_currencies: ['XOF', 'XAF', 'USD', 'EUR', 'GHS', 'NGN', 'KES', 'ZAR'],
-    supported_countries: ['CI', 'SN', 'CM', 'BF', 'ML', 'TG', 'BJ', 'NE', 'GH', 'NG'],
+    capabilities: ['payment_links', 'payment_creation', 'payment_status', 'webhooks', 'customer_metadata'],
+    supported_currencies: ['XOF', 'XAF', 'USD', 'EUR', 'GHS', 'NGN'],
+    supported_countries: ['CI', 'SN', 'CM', 'BF', 'ML', 'BJ', 'TG', 'NE', 'GA', 'CG'],
     secret_key_env: 'PSP_CINETPAY_API_KEY',
+    site_id_env: 'PSP_CINETPAY_SITE_ID',
     webhook_secret_env: 'PSP_CINETPAY_WEBHOOK_SECRET',
     docs_url: 'https://docs.cinetpay.com',
-    color: '#f24a22',
+    color: '#f04e26',
     logo_url: 'https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/57f5a6e4c_icon.webp',
   },
 };
@@ -168,6 +170,8 @@ export async function createPaymentLink(providerKey: string, params: {
       return await createFlutterwaveLink(secretKey, params);
     case 'korapay':
       return await createKorapayLink(secretKey, params);
+    case 'cinetpay':
+      return await createCinetPayLink(secretKey, params);
     default:
       throw new Error(`${provider.display_name} API integration is not yet implemented. Configure the secret and contact support to enable it.`);
   }
@@ -271,4 +275,34 @@ async function createKorapayLink(secretKey: string, p: any) {
   }
   const data = await res.json();
   return { link_url: data.data.checkout_url, provider_reference: data.data.reference };
+}
+
+async function createCinetPayLink(secretKey: string, p: any) {
+  const siteId = secrets.get('PSP_CINETPAY_SITE_ID');
+  if (!siteId) throw new Error('PSP_CINETPAY_SITE_ID is not configured. Set it in Settings → Secrets.');
+  const res = await fetch('https://api-checkout.cinetpay.com/v2/payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      apikey: secretKey,
+      site_id: siteId,
+      trans_id: p.reference || `cnp_${Date.now()}`,
+      amount: String(Math.round(p.amount)),
+      currency: p.currency,
+      designation: p.description || 'Payment',
+      buyer_name: p.customer_name || undefined,
+      buyer_email: p.customer_email,
+      return_url: p.metadata?.callback_url || 'https://liafrik.com',
+      notify_url: p.metadata?.notify_url || 'https://liafrik.com',
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`CinetPay API error: ${err.slice(0, 300)}`);
+  }
+  const data = await res.json();
+  if (data.status !== 'accepted' || !data.data?.payment_url) {
+    throw new Error(`CinetPay API error: ${JSON.stringify(data).slice(0, 300)}`);
+  }
+  return { link_url: data.data.payment_url, provider_reference: data.data.trans_id || p.reference };
 }

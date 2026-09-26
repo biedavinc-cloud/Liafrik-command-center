@@ -37,15 +37,13 @@ export default function PspCenter() {
           {psps.map((psp) => (
             <div key={psp.key} className="surface p-5 space-y-3">
               <div className="flex items-start gap-3">
-                {psp.logo_url ? (
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white border p-1.5 overflow-hidden">
-                    <Image src={psp.logo_url} alt={psp.display_name} fittingType="fit" className="h-full w-full" />
-                  </div>
-                ) : (
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: psp.color }}>
-                    {psp.display_name[0]}
-                  </div>
-                )}
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white border p-1">
+                  {psp.logo_url ? (
+                    <Image src={psp.logo_url} alt={psp.display_name} className="h-full w-full" fittingType="fit" />
+                  ) : (
+                    <span className="text-sm font-bold" style={{ color: psp.color }}>{psp.display_name[0]}</span>
+                  )}
+                </div>
                 <div className="min-w-0">
                   <div className="text-[13px] font-semibold">{psp.display_name}</div>
                   <div className="text-[11px] text-muted-foreground line-clamp-2">{psp.description}</div>
