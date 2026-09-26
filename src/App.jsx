@@ -40,15 +40,12 @@ import Communication from '@/pages/Communication';
 import Tasks from '@/pages/Tasks';
 import RevenueAnalytics from '@/pages/RevenueAnalytics';
 import InternalMessaging from '@/pages/InternalMessaging';
-import TaskManagement from '@/pages/TaskManagement';
 import AutomationEngine from '@/pages/AutomationEngine';
-import GlobalSettings from '@/pages/GlobalSettings';
 import DatabaseInspector from '@/pages/DatabaseInspector';
 import HealthMonitor from '@/pages/HealthMonitor';
 import InfrastructureMap from '@/pages/InfrastructureMap';
 import DeploymentPipeline from '@/pages/DeploymentPipeline';
 import EnvironmentConfig from '@/pages/EnvironmentConfig';
-import FinancialIntegrations from '@/pages/FinancialIntegrations';
 import AlertRules from '@/pages/AlertRules';
 
 const AuthenticatedApp = () => {
@@ -110,15 +107,12 @@ const AuthenticatedApp = () => {
           <Route path="/settings" element={<Settings />} />
           <Route path="/revenue-analytics" element={<RevenueAnalytics />} />
           <Route path="/internal-messaging" element={<InternalMessaging />} />
-          <Route path="/task-management" element={<TaskManagement />} />
           <Route path="/automation-engine" element={<AutomationEngine />} />
-          <Route path="/global-settings" element={<GlobalSettings />} />
           <Route path="/database-inspector" element={<DatabaseInspector />} />
           <Route path="/health-monitor" element={<HealthMonitor />} />
           <Route path="/infrastructure-map" element={<InfrastructureMap />} />
           <Route path="/deployments" element={<DeploymentPipeline />} />
           <Route path="/environment-config" element={<EnvironmentConfig />} />
-          <Route path="/financial-integrations" element={<FinancialIntegrations />} />
           <Route path="/alert-rules" element={<AlertRules />} />
         </Route>
       </Route>

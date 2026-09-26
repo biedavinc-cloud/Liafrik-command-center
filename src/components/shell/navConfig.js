@@ -12,7 +12,6 @@ export const NAV_SECTIONS = [
   { group: 'payments', items: [
     { key: 'psp-center', path: '/payments', icon: CreditCard },
     { key: 'payment-links', path: '/payment-links', icon: Link2 },
-    { key: 'financial-integrations', path: '/financial-integrations', icon: Boxes },
     { key: 'revenue-analytics', path: '/revenue-analytics', icon: Wallet },
   ] },
   { group: 'identity', items: [
@@ -37,8 +36,6 @@ export const NAV_SECTIONS = [
     { key: 'environments', path: '/environments', icon: Layers },
     { key: 'communication', path: '/communication', icon: MessageSquare },
     { key: 'tasks', path: '/tasks', icon: ListChecks },
-    { key: 'internal-messaging', path: '/internal-messaging', icon: MessageSquare },
-    { key: 'task-management', path: '/task-management', icon: ListChecks },
     { key: 'automation-engine', path: '/automation-engine', icon: Zap },
     { key: 'alert-rules', path: '/alert-rules', icon: BellRing },
     { key: 'deployments', path: '/deployments', icon: Rocket },
@@ -47,7 +44,6 @@ export const NAV_SECTIONS = [
   { group: 'system', items: [
     { key: 'security', path: '/security', icon: Shield },
     { key: 'settings', path: '/settings', icon: Settings },
-    { key: 'global-settings', path: '/global-settings', icon: Settings },
     { key: 'database-inspector', path: '/database-inspector', icon: Database },
   ] },
 ];
