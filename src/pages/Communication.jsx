@@ -200,6 +200,7 @@ function NewConversationDialog({ open, onOpenChange, user }) {
 
 // ── External Client Communication ──────────────────────────────
 function ExternalMessaging() {
+  const { t } = useT();
   const { data: channelData, isLoading } = useChannelStatus();
   const channels = channelData?.channels || [];
   const ready = channels.filter((c) => c.configured).length;
