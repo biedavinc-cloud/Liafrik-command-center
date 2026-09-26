@@ -36,6 +36,8 @@ import Rules from '@/pages/Rules';
 import AICommandCenter from '@/pages/AICommandCenter';
 import PspCenter from '@/pages/PspCenter';
 import PaymentLinks from '@/pages/PaymentLinks';
+import Communication from '@/pages/Communication';
+import Tasks from '@/pages/Tasks';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -73,6 +75,8 @@ const AuthenticatedApp = () => {
           <Route path="/ai" element={<AICommandCenter />} />
           <Route path="/payments" element={<PspCenter />} />
           <Route path="/payment-links" element={<PaymentLinks />} />
+          <Route path="/communication" element={<Communication />} />
+          <Route path="/tasks" element={<Tasks />} />
           <Route path="/apps" element={<Applications />} />
           <Route path="/apps/new" element={<CreateApplication />} />
           <Route path="/apps/:slug" element={<ApplicationDetail />} />
