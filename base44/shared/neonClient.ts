@@ -57,11 +57,6 @@ export const NUMERIC_COLUMNS: Record<string, string[]> = {
   staff_tasks: [],
 };
 
-// Columns that are JSONB (arrays/objects) and need JSON.stringify on write
-export const NUMERIC_COLUMNS_AI: Record<string, string[]> = {
-  ai_activities: ['latency_ms', 'tokens_used'],
-};
-
 export const JSONB_COLUMNS: Record<string, string[]> = {
   applications: ['capabilities', 'allowed_origins', 'ip_restrictions'],
   administrators: ['assignments', 'permissions'],
@@ -99,7 +94,18 @@ export function buildWhereClause(filter: Record<string, any>, startIdx = 1) {
   let idx = startIdx;
 
   for (const [key, value] of Object.entries(filter)) {
-    if (value === null || value === undefined) {
+    if (key === '$or' && Array.isArray(value)) {
+      const orParts: string[] = [];
+      for (const subFilter of value) {
+        const sub = buildWhereClause(subFilter, idx);
+        if (sub.clause) {
+          orParts.push(`(${sub.clause})`);
+          params.push(...sub.params);
+          idx = sub.nextIdx;
+        }
+      }
+      if (orParts.length) conditions.push(`(${orParts.join(' OR ')})`);
+    } else if (value === null || value === undefined) {
       conditions.push(`${key} IS NULL`);
     } else if (typeof value === 'object' && !Array.isArray(value)) {
       for (const [op, opVal] of Object.entries(value)) {

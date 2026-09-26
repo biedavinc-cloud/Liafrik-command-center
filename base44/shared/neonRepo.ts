@@ -45,6 +45,24 @@ export function neonRepo(entity) {
       const result = await sql(`INSERT INTO ${table} (${cols.join(', ')}) VALUES (${vals.join(', ')}) RETURNING *`, params);
       return convertRow(table, result[0]);
     },
+    async bulkCreate(rows) {
+      const sql = createSql();
+      if (!Array.isArray(rows) || !rows.length) return [];
+      const allCols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+      const placeholders = [];
+      const params = [];
+      let idx = 1;
+      for (const row of rows) {
+        const ph = [];
+        for (const col of allCols) {
+          ph.push(`$${idx++}`);
+          params.push(serializeValue(table, col, row[col]));
+        }
+        placeholders.push(`(${ph.join(', ')})`);
+      }
+      const result = await sql(`INSERT INTO ${table} (${allCols.join(', ')}) VALUES ${placeholders.join(', ')} RETURNING *`, params);
+      return convertRows(table, result);
+    },
     async update(id, data) {
       const sql = createSql();
       const cols = Object.keys(data);
@@ -53,6 +71,25 @@ export function neonRepo(entity) {
       params.push(id);
       const result = await sql(`UPDATE ${table} SET ${setClauses.join(', ')}, updated_date = now() WHERE id = $${cols.length + 1} RETURNING *`, params);
       return convertRow(table, result[0] || null);
+    },
+    async delete(id) {
+      const sql = createSql();
+      const result = await sql(`DELETE FROM ${table} WHERE id = $1 RETURNING *`, [id]);
+      return convertRow(table, result[0] || null);
+    },
+    async deleteMany(query) {
+      const sql = createSql();
+      const { clause, params: whereParams } = buildWhereClause(query || {});
+      const where = clause ? `WHERE ${clause}` : '';
+      const result = await sql(`DELETE FROM ${table} ${where} RETURNING *`, whereParams);
+      return convertRows(table, result);
+    },
+    async count(query) {
+      const sql = createSql();
+      const { clause, params: whereParams } = buildWhereClause(query || {});
+      const where = clause ? `WHERE ${clause}` : '';
+      const rows = await sql(`SELECT COUNT(*)::int as count FROM ${table} ${where}`, whereParams);
+      return rows[0]?.count || 0;
     },
     async updateMany(query, update) {
       const sql = createSql();

@@ -25,6 +25,8 @@ const neonRepo = (name) => ({
     base44.functions.invoke('neonData', { entity: name, operation: 'delete', id }).then(r => r.data),
   deleteMany: (query) =>
     base44.functions.invoke('neonData', { entity: name, operation: 'deleteMany', query }).then(r => r.data),
+  count: (query = {}) =>
+    base44.functions.invoke('neonData', { entity: name, operation: 'count', query }).then(r => r.data),
 });
 
 // User is the built-in Base44 auth entity — keep on platform storage

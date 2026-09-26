@@ -17,13 +17,6 @@ const EXCLUDED_COLUMNS: Record<string, string[]> = {
   payment_providers: ['secret_value', 'webhook_secret_value', 'site_id_value'],
 };
 
-function selectColumns(table: string): string {
-  const excluded = EXCLUDED_COLUMNS[table];
-  if (!excluded || !excluded.length) return '*';
-  return excluded.map(c => `"${c}"`).join(', ');
-  // Note: we build a column list excluding secrets — but simpler to SELECT * then strip
-}
-
 function stripSecrets(table: string, rows: any): any {
   const excluded = EXCLUDED_COLUMNS[table];
   if (!excluded || !excluded.length) return rows;
@@ -81,6 +74,14 @@ export default async function(req: Request): Promise<Response> {
       return Response.json(stripSecrets(table, convertRow(table, rows[0] || null)));
     }
 
+    // ── COUNT ──
+    if (operation === 'count') {
+      const { clause, params: whereParams } = buildWhereClause(query || {});
+      const where = clause ? `WHERE ${clause}` : '';
+      const rows = await sql(`SELECT COUNT(*)::int as count FROM ${table} ${where}`, whereParams);
+      return Response.json({ count: rows[0]?.count || 0 });
+    }
+
     // ── CREATE ──
     if (operation === 'create') {
       const cols = Object.keys(data);
@@ -104,6 +105,8 @@ export default async function(req: Request): Promise<Response> {
     if (operation === 'bulkCreate') {
       if (!Array.isArray(rows) || !rows.length) return Response.json([]);
       const allCols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+      // Add created_by_id to all rows if user is available
+      if (user.id && !allCols.includes('created_by_id')) allCols.push('created_by_id');
       const placeholders: string[] = [];
       const params: any[] = [];
       let idx = 1;
@@ -111,7 +114,8 @@ export default async function(req: Request): Promise<Response> {
         const ph: string[] = [];
         for (const col of allCols) {
           ph.push(`$${idx++}`);
-          params.push(serializeValue(table, col, row[col]));
+          const val = col === 'created_by_id' ? user.id : serializeValue(table, col, row[col]);
+          params.push(val);
         }
         placeholders.push(`(${ph.join(', ')})`);
       }
@@ -119,7 +123,7 @@ export default async function(req: Request): Promise<Response> {
         `INSERT INTO ${table} (${allCols.join(', ')}) VALUES ${placeholders.join(', ')} RETURNING *`,
         params
       );
-      return Response.json(convertRows(table, result));
+      return Response.json(stripSecrets(table, convertRows(table, result)));
     }
 
     // ── UPDATE ──

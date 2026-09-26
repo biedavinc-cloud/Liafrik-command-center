@@ -55,15 +55,15 @@ export default async function(req: Request): Promise<Response> {
       const existing = await repo.filter({ provider, environment: env });
       const hint = makeHint(secret_value);
 
-      let result;
       const updateData: any = {
         credential_hint: hint,
         configured_by: user.email,
+        secret_value,
       };
-      if (secret_value) updateData.secret_value = secret_value;
       if (webhook_secret_value !== undefined) updateData.webhook_secret_value = webhook_secret_value;
       if (site_id_value !== undefined) updateData.site_id_value = site_id_value;
 
+      let result;
       if (existing[0]) {
         result = await repo.update(existing[0].id, updateData);
       } else {
@@ -72,9 +72,6 @@ export default async function(req: Request): Promise<Response> {
           status: 'configured', enabled: false,
           capabilities: def.capabilities, supported_currencies: def.supported_currencies,
           supported_countries: def.supported_countries,
-          credential_hint: hint, configured_by: user.email,
-          secret_value, webhook_secret_value: webhook_secret_value || null,
-          site_id_value: site_id_value || null,
           correlation_id: `psp_${Date.now()}`,
           ...updateData,
         });
