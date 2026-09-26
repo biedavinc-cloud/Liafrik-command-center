@@ -1,4 +1,4 @@
-import { LayoutDashboard, AppWindow, Users, ShieldCheck, KeyRound, BarChart3, Wallet, Activity, Bell, ScrollText, Plug, Layers, Shield, Settings, AlertTriangle, Code, Zap, Sparkles, CreditCard, Link2, MessageSquare, ListChecks } from 'lucide-react';
+import { LayoutDashboard, AppWindow, Users, ShieldCheck, KeyRound, BarChart3, Wallet, Activity, Bell, ScrollText, Plug, Layers, Shield, Settings, AlertTriangle, Code, Zap, Sparkles, CreditCard, Link2, MessageSquare, ListChecks, Network, Database, Gauge, Rocket, Sliders, BellRing, Boxes } from 'lucide-react';
 
 // `planned` modules render the roadmap view until their phase ships.
 export const NAV_SECTIONS = [
@@ -12,6 +12,8 @@ export const NAV_SECTIONS = [
   { group: 'payments', items: [
     { key: 'psp-center', path: '/payments', icon: CreditCard },
     { key: 'payment-links', path: '/payment-links', icon: Link2 },
+    { key: 'financial-integrations', path: '/financial-integrations', icon: Boxes },
+    { key: 'revenue-analytics', path: '/revenue-analytics', icon: Wallet },
   ] },
   { group: 'identity', items: [
     { key: 'users', path: '/users', icon: Users },
@@ -22,6 +24,8 @@ export const NAV_SECTIONS = [
     { key: 'analytics', path: '/analytics', icon: BarChart3 },
     { key: 'revenue', path: '/revenue', icon: Wallet },
     { key: 'monitoring', path: '/monitoring', icon: Activity },
+    { key: 'health-monitor', path: '/health-monitor', icon: Gauge },
+    { key: 'infrastructure-map', path: '/infrastructure-map', icon: Network },
   ] },
   { group: 'operations', items: [
     { key: 'incidents', path: '/incidents', icon: AlertTriangle },
@@ -33,10 +37,18 @@ export const NAV_SECTIONS = [
     { key: 'environments', path: '/environments', icon: Layers },
     { key: 'communication', path: '/communication', icon: MessageSquare },
     { key: 'tasks', path: '/tasks', icon: ListChecks },
+    { key: 'internal-messaging', path: '/internal-messaging', icon: MessageSquare },
+    { key: 'task-management', path: '/task-management', icon: ListChecks },
+    { key: 'automation-engine', path: '/automation-engine', icon: Zap },
+    { key: 'alert-rules', path: '/alert-rules', icon: BellRing },
+    { key: 'deployments', path: '/deployments', icon: Rocket },
+    { key: 'environment-config', path: '/environment-config', icon: Sliders },
   ] },
   { group: 'system', items: [
     { key: 'security', path: '/security', icon: Shield },
     { key: 'settings', path: '/settings', icon: Settings },
+    { key: 'global-settings', path: '/global-settings', icon: Settings },
+    { key: 'database-inspector', path: '/database-inspector', icon: Database },
   ] },
 ];
 
