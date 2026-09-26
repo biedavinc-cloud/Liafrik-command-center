@@ -171,13 +171,13 @@ LIAFRIK
  ├── Payments
  └── Analytics
 
-Trek Visa
- ├── Visa Applications
+POS Flow
+ ├── Applications
  ├── Customers
  ├── Documents
  └── Payments
 
-Staff CRM
+Atlas CRM
  ├── Staff
  ├── Branches
  ├── Reviews
@@ -359,6 +359,7 @@ The project should not contain third-party builder branding, signatures, documen
 Official Ecosystem
 
 LIAFRIK
+Founder Vincent Nogue
 Global SaaS Ecosystem
 https://liafrik.com
 
