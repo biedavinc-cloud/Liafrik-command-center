@@ -1,2 +1,3 @@
-# Liafrik-command-center
-Centre de controle et de commande
+# Liafrik Command Center
+
+Enterprise control plane.
