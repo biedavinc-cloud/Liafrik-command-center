@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
+import { neonRepo } from '../../shared/neonRepo.ts';
 
 export default async function(req: Request): Promise<Response> {
   try {
@@ -12,7 +13,7 @@ export default async function(req: Request): Promise<Response> {
     if (!token) return Response.json({ error: 'Missing invitation token' }, { status: 400 });
 
     // Find the invitation
-    const invitations = await base44.asServiceRole.entities.Invitation.filter({ token });
+    const invitations = await neonRepo('Invitation').filter({ token });
     if (invitations.length === 0) return Response.json({ error: 'Invalid invitation' }, { status: 400 });
 
     const invitation = invitations[0];
@@ -25,7 +26,7 @@ export default async function(req: Request): Promise<Response> {
     }
 
     // Mark invitation as used
-    await base44.asServiceRole.entities.Invitation.update(invitation.id, {
+    await neonRepo('Invitation').update(invitation.id, {
       status: 'used',
       used_at: new Date().toISOString(),
       used_by_email: user.email,
@@ -33,13 +34,13 @@ export default async function(req: Request): Promise<Response> {
 
     // Activate the Administrator record
     if (invitation.administrator_id) {
-      await base44.asServiceRole.entities.Administrator.update(invitation.administrator_id, {
+      await neonRepo('Administrator').update(invitation.administrator_id, {
         status: 'active',
       });
     }
 
     // Create audit event
-    await base44.asServiceRole.entities.AuditEvent.create({
+    await neonRepo('AuditEvent').create({
       actor: user.full_name || user.email,
       actor_role: user.role,
       action: 'administrator.activated',
@@ -47,8 +48,8 @@ export default async function(req: Request): Promise<Response> {
       resource_id: invitation.email,
       outcome: 'success',
       risk_level: 'medium',
-      before: { status: 'pending' },
-      after: { status: 'active' },
+      before: JSON.stringify({ status: 'pending' }),
+      after: JSON.stringify({ status: 'active' }),
     });
 
     return Response.json({ success: true });

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
+import { neonRepo } from '../../shared/neonRepo.ts';
 
 // Registration Token Generator — generates a one-time, expiring registration token
 // for an application to connect to the Command Center via the LCP.
@@ -22,13 +23,13 @@ export default async function(req) {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24h expiry
 
     // Persist only the masked hint — the full token is never stored
-    await base44.entities.Application.update(application_id, {
+    await neonRepo('Application').update(application_id, {
       registration_token_hint: tokenHint,
       registration_status: 'active',
     });
 
     // Audit the token generation
-    await base44.entities.AuditEvent.create({
+    await neonRepo('AuditEvent').create({
       actor: user.email,
       actor_role: user.role,
       application_id,

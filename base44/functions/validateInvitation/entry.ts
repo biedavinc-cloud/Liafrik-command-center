@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
+import { neonRepo } from '../../shared/neonRepo.ts';
 
 export default async function(req: Request): Promise<Response> {
   try {
@@ -9,7 +10,7 @@ export default async function(req: Request): Promise<Response> {
     if (!token) return Response.json({ valid: false, reason: 'missing_token' }, { status: 400 });
 
     // Use service role — the invitee is not yet authenticated
-    const invitations = await base44.asServiceRole.entities.Invitation.filter({ token });
+    const invitations = await neonRepo('Invitation').filter({ token });
     if (invitations.length === 0) return Response.json({ valid: false, reason: 'not_found' });
 
     const invitation = invitations[0];

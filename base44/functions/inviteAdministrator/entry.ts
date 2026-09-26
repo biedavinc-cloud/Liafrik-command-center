@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
+import { neonRepo } from '../../shared/neonRepo.ts';
 
 export default async function(req: Request): Promise<Response> {
   try {
@@ -19,16 +20,16 @@ export default async function(req: Request): Promise<Response> {
     }
 
     // Check for existing administrator with same email
-    const existing = await base44.asServiceRole.entities.Administrator.filter({ email: email.toLowerCase() });
+    const existing = await neonRepo('Administrator').filter({ email: email.toLowerCase() });
     if (existing.length > 0) {
       return Response.json({ error: 'An administrator with this email already exists' }, { status: 409 });
     }
 
     // Check for existing pending invitation
-    const existingInvites = await base44.asServiceRole.entities.Invitation.filter({ email: email.toLowerCase(), status: 'pending' });
+    const existingInvites = await neonRepo('Invitation').filter({ email: email.toLowerCase(), status: 'pending' });
     if (existingInvites.length > 0) {
       // Revoke old pending invitation
-      await base44.asServiceRole.entities.Invitation.updateMany(
+      await neonRepo('Invitation').updateMany(
         { email: email.toLowerCase(), status: 'pending' },
         { $set: { status: 'revoked' } }
       );
@@ -39,7 +40,7 @@ export default async function(req: Request): Promise<Response> {
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
     // Create Administrator record with status 'pending'
-    const admin = await base44.asServiceRole.entities.Administrator.create({
+    const admin = await neonRepo('Administrator').create({
       full_name: full_name.trim(),
       email: email.toLowerCase(),
       global_role: global_role || 'none',
@@ -50,7 +51,7 @@ export default async function(req: Request): Promise<Response> {
     });
 
     // Create Invitation record
-    const invitation = await base44.asServiceRole.entities.Invitation.create({
+    const invitation = await neonRepo('Invitation').create({
       email: email.toLowerCase(),
       full_name: full_name.trim(),
       global_role: global_role || 'none',
@@ -65,7 +66,7 @@ export default async function(req: Request): Promise<Response> {
     });
 
     // Create audit event
-    await base44.asServiceRole.entities.AuditEvent.create({
+    await neonRepo('AuditEvent').create({
       actor: user.full_name || user.email,
       actor_role: user.role,
       action: 'administrator.invited',
@@ -73,7 +74,7 @@ export default async function(req: Request): Promise<Response> {
       resource_id: email.toLowerCase(),
       outcome: 'success',
       risk_level: 'medium',
-      after: { global_role, assignments, permissions, invitation_id: invitation.id },
+      after: JSON.stringify({ global_role, assignments, permissions, invitation_id: invitation.id }),
     });
 
     // Send invitation email
