@@ -677,6 +677,26 @@ const DDL: string[] = [
   `CREATE INDEX IF NOT EXISTS idx_outbound_messages_created ON outbound_messages(created_date DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_outbound_messages_channel ON outbound_messages(channel)`,
   `CREATE INDEX IF NOT EXISTS idx_outbound_messages_app ON outbound_messages(application_id)`,
+
+  // Communication channels — configurable channel credentials (server-side only)
+  `CREATE TABLE IF NOT EXISTS communication_channels (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    channel TEXT NOT NULL UNIQUE,
+    display_name TEXT NOT NULL,
+    credentials JSONB DEFAULT '{}'::jsonb,
+    credential_hints JSONB DEFAULT '{}'::jsonb,
+    configured BOOLEAN DEFAULT false,
+    enabled BOOLEAN DEFAULT false,
+    last_tested TIMESTAMPTZ,
+    last_test_result TEXT,
+    configured_by TEXT,
+    configured_by_email TEXT,
+    correlation_id TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_comm_channels_channel ON communication_channels(channel)`,
 ];
 
 export default async function(req: Request): Promise<Response> {

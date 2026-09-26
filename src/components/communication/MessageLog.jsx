@@ -2,10 +2,10 @@ import React from 'react';
 import { useOutboundMessages } from '@/lib/data/hooks';
 import Panel from '@/components/kit/Panel';
 import EmptyState from '@/components/kit/EmptyState';
-import { Mail, Send, Slack, Phone, MessageSquare, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import ChannelLogo from './ChannelLogos';
+import { CheckCircle2, XCircle, Clock, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const CHANNEL_ICONS = { email: Mail, resend: Send, gmail: Mail, slack: Slack, telegram: Send, whatsapp: Phone };
 const STATUS_ICONS = { sent: CheckCircle2, failed: XCircle, pending: Clock };
 const STATUS_COLORS = { sent: 'text-emerald-600', failed: 'text-rose-600', pending: 'text-amber-600' };
 
@@ -21,13 +21,10 @@ export default function MessageLog() {
       ) : (
         <div className="divide-y">
           {messages.slice(0, 20).map((msg) => {
-            const Icon = CHANNEL_ICONS[msg.channel] || MessageSquare;
             const StatusIcon = STATUS_ICONS[msg.status] || Clock;
             return (
               <div key={msg.id} className="flex items-start gap-3 py-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                  <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                </div>
+                <ChannelLogo channel={msg.channel} size="sm" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-[12px] font-medium truncate">{msg.recipient}</span>

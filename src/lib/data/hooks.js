@@ -146,6 +146,40 @@ export function useSendCommunication() {
 }
 export const useOutboundMessages = () => useQuery({ queryKey: ['outboundMessages'], queryFn: () => R.OutboundMessages.list('-created_date', 50), ...opts });
 
+export function useConfigureChannel() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data) => {
+      const res = await base44.functions.invoke('sendCommunication', { action: 'configure', ...data });
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['channelStatus'] });
+      qc.invalidateQueries({ queryKey: ['audit'] });
+    },
+  });
+}
+export function useTestChannel() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data) => {
+      const res = await base44.functions.invoke('sendCommunication', { action: 'test', ...data });
+      return res.data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['channelStatus'] }),
+  });
+}
+export function useDeleteChannelConfig() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (data) => {
+      const res = await base44.functions.invoke('sendCommunication', { action: 'delete_config', ...data });
+      return res.data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['channelStatus'] }),
+  });
+}
+
 // Staff task hooks
 export function useCreateTask() {
   const qc = useQueryClient();

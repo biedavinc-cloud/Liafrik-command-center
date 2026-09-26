@@ -41,6 +41,7 @@ export const TABLE_MAP: Record<string, string> = {
   Message: 'messages',
   Conversation: 'conversations',
   OutboundMessage: 'outbound_messages',
+  CommunicationChannel: 'communication_channels',
 };
 
 // Columns that are NUMERIC and need string→number conversion on read
@@ -73,6 +74,7 @@ export const JSONB_COLUMNS: Record<string, string[]> = {
   payment_links: ['metadata'],
   messages: ['attachments', 'mentions', 'read_by'],
   conversations: ['participants'],
+  communication_channels: ['credentials', 'credential_hints'],
 };
 
 function isJsonbColumn(table: string, col: string): boolean {

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { Send, Loader2, AlertTriangle } from 'lucide-react';
+import ChannelLogo from './ChannelLogos';
 import { cn } from '@/lib/utils';
 
 export default function ExternalComposer() {
@@ -15,7 +16,6 @@ export default function ExternalComposer() {
   const { data: channelData, isLoading: loadingChannels } = useChannelStatus();
   const sendComm = useSendCommunication();
   const channels = channelData?.channels || [];
-  const configuredChannels = channels.filter((c) => c.configured);
 
   const [form, setForm] = useState({
     channel: 'email',
@@ -33,7 +33,7 @@ export default function ExternalComposer() {
     }
     const appName = apps.find((a) => a.id === form.application_id)?.name || '';
     try {
-      const res = await sendComm.mutateAsync({ ...form, application_name: appName });
+      await sendComm.mutateAsync({ ...form, application_name: appName });
       toast({ title: 'Message sent', description: `via ${form.channel} → ${form.recipient}` });
       setForm({ ...form, recipient: '', recipient_name: '', subject: '', text: '' });
     } catch (e) {
@@ -43,6 +43,18 @@ export default function ExternalComposer() {
 
   const selectedChannel = channels.find((c) => c.key === form.channel);
   const isConfigured = selectedChannel?.configured;
+  const isChatType = selectedChannel?.type === 'chat' || selectedChannel?.type === 'sms';
+  const isVideoType = selectedChannel?.type === 'video';
+
+  const recipientLabel = () => {
+    if (form.channel === 'slack') return '(channel #name or ID)';
+    if (form.channel === 'teams') return '(team/channel ID)';
+    if (form.channel === 'telegram') return '(chat ID)';
+    if (form.channel === 'whatsapp') return '(phone +123...)';
+    if (form.channel === 'twilio') return '(phone +123...)';
+    if (form.channel === 'meet') return '(attendee email)';
+    return '(email address)';
+  };
 
   return (
     <div className="surface p-4">
@@ -79,8 +91,8 @@ export default function ExternalComposer() {
             </Select>
           </div>
           <div className="col-span-2">
-            <Label className="mb-1 block text-[11px]">Recipient {form.channel === 'slack' ? '(channel #name or ID)' : form.channel === 'telegram' ? '(chat ID)' : form.channel === 'whatsapp' ? '(phone +123...)' : '(email address)'}</Label>
-            <Input value={form.recipient} onChange={(e) => setForm({ ...form, recipient: e.target.value })} placeholder={form.channel === 'slack' ? '#general' : form.channel === 'whatsapp' ? '+2376...' : 'recipient@example.com'} className="h-9 text-[12px]" />
+            <Label className="mb-1 block text-[11px]">Recipient {recipientLabel()}</Label>
+            <Input value={form.recipient} onChange={(e) => setForm({ ...form, recipient: e.target.value })} placeholder={form.channel === 'slack' ? '#general' : form.channel === 'whatsapp' || form.channel === 'twilio' ? '+2376...' : 'recipient@example.com'} className="h-9 text-[12px]" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -89,7 +101,7 @@ export default function ExternalComposer() {
             <Input value={form.recipient_name} onChange={(e) => setForm({ ...form, recipient_name: e.target.value })} placeholder="John Doe" className="h-9 text-[12px]" />
           </div>
           <div>
-            <Label className="mb-1 block text-[11px]">Subject {form.channel === 'slack' || form.channel === 'telegram' || form.channel === 'whatsapp' ? '(optional)' : ''}</Label>
+            <Label className="mb-1 block text-[11px]">Subject {isChatType ? '(optional)' : ''}</Label>
             <Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder="Subject line" className="h-9 text-[12px]" />
           </div>
         </div>
@@ -100,7 +112,7 @@ export default function ExternalComposer() {
         {!isConfigured && (
           <div className={cn('flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50/50 p-2.5 text-[11px] text-amber-700')}>
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-            <span>This channel is not configured. {selectedChannel?.key === 'resend' ? 'Set RESEND_API_KEY in Secrets.' : selectedChannel?.key === 'telegram' ? 'Set TELEGRAM_BOT_TOKEN in Secrets.' : selectedChannel?.key === 'whatsapp' ? 'Set WHATSAPP_TOKEN and WHATSAPP_PHONE_ID in Secrets.' : selectedChannel?.key === 'slack' ? 'Authorize the Slack bot connector in Integrations.' : selectedChannel?.key === 'gmail' ? 'Authorize the Gmail connector in Integrations.' : 'See Settings → Secrets or Integrations.'}</span>
+            <span>This channel is not configured. Click the settings icon on the channel card above to configure it.</span>
           </div>
         )}
         <div className="flex justify-end">
