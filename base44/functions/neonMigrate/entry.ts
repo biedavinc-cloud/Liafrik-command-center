@@ -455,6 +455,32 @@ const DDL: string[] = [
   `CREATE INDEX IF NOT EXISTS idx_app_configs_app_id ON app_configs(application_id)`,
   `CREATE INDEX IF NOT EXISTS idx_invitations_email ON invitations(email)`,
   `CREATE INDEX IF NOT EXISTS idx_invitations_token ON invitations(token)`,
+
+  // AI Governance
+  `CREATE TABLE IF NOT EXISTS ai_activities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_date TIMESTAMPTZ DEFAULT now(),
+    updated_date TIMESTAMPTZ DEFAULT now(),
+    created_by_id TEXT,
+    user_id TEXT NOT NULL,
+    user_email TEXT,
+    request_type TEXT NOT NULL,
+    prompt TEXT NOT NULL,
+    data_sources JSONB DEFAULT '[]',
+    response TEXT,
+    proposed_action TEXT,
+    approval_status TEXT DEFAULT 'none',
+    execution_result TEXT,
+    provider TEXT,
+    model TEXT,
+    correlation_id TEXT,
+    latency_ms NUMERIC,
+    tokens_used NUMERIC,
+    error TEXT,
+    application_id TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_ai_activities_created ON ai_activities(created_date DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_ai_activities_user ON ai_activities(user_id)`,
 ];
 
 export default async function(req: Request): Promise<Response> {

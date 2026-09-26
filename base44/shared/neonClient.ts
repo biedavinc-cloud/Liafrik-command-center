@@ -31,11 +31,13 @@ export const TABLE_MAP: Record<string, string> = {
   AppConfig: 'app_configs',
   AutomationRule: 'automation_rules',
   Invitation: 'invitations',
+  AiActivity: 'ai_activities',
 };
 
 // Columns that are NUMERIC and need string→number conversion on read
 export const NUMERIC_COLUMNS: Record<string, string[]> = {
   applications: ['users_count', 'transactions', 'revenue', 'uptime', 'response_ms', 'error_rate', 'request_count', 'heartbeat_interval_sec', 'rate_limit'],
+  ai_activities: ['latency_ms', 'tokens_used'],
   application_environments: ['health'],
   deployments: ['duration_sec'],
   roles: ['rank'],
@@ -46,6 +48,10 @@ export const NUMERIC_COLUMNS: Record<string, string[]> = {
 };
 
 // Columns that are JSONB (arrays/objects) and need JSON.stringify on write
+export const NUMERIC_COLUMNS_AI: Record<string, string[]> = {
+  ai_activities: ['latency_ms', 'tokens_used'],
+};
+
 export const JSONB_COLUMNS: Record<string, string[]> = {
   applications: ['capabilities', 'allowed_origins', 'ip_restrictions'],
   administrators: ['assignments', 'permissions'],
@@ -54,6 +60,7 @@ export const JSONB_COLUMNS: Record<string, string[]> = {
   notification_rules: ['channels'],
   webhook_configs: ['deliveries'],
   invitations: ['assignments', 'permissions'],
+  ai_activities: ['data_sources'],
 };
 
 function isJsonbColumn(table: string, col: string): boolean {

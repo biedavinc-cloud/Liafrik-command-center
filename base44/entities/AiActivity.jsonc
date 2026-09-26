@@ -1,0 +1,110 @@
+{
+  "name": "AiActivity",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "query",
+        "analyze",
+        "incident",
+        "security",
+        "onboard",
+        "search"
+      ],
+      "description": "Type of AI request"
+    },
+    "prompt": {
+      "type": "string",
+      "description": "The user's natural-language prompt"
+    },
+    "data_sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of data sources accessed for this request"
+    },
+    "response": {
+      "type": "string",
+      "description": "The AI response text"
+    },
+    "proposed_action": {
+      "type": "string",
+      "description": "Any action proposed by the AI"
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "pending",
+        "approved",
+        "rejected",
+        "executed"
+      ],
+      "default": "none"
+    },
+    "execution_result": {
+      "type": "string",
+      "description": "Result of executing the proposed action"
+    },
+    "provider": {
+      "type": "string",
+      "description": "AI provider used (e.g. gemini)"
+    },
+    "model": {
+      "type": "string",
+      "description": "AI model used"
+    },
+    "correlation_id": {
+      "type": "string"
+    },
+    "latency_ms": {
+      "type": "number"
+    },
+    "tokens_used": {
+      "type": "number"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if the request failed"
+    },
+    "application_id": {
+      "type": "string",
+      "description": "Related application if applicable"
+    }
+  },
+  "required": [
+    "user_id",
+    "request_type",
+    "prompt"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
