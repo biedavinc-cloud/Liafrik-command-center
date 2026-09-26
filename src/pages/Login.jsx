@@ -8,14 +8,14 @@ import { LogIn, Mail, Lock, Loader2, ShieldCheck } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function Login() {
+  const { t } = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  // Post-login destination (e.g. the MCP OAuth consent page sends users here
-  // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
 
   const handleSubmit = async (e) => {
@@ -26,7 +26,7 @@ export default function Login() {
       await base44.auth.loginViaEmailPassword(email, password);
       window.location.href = returnTo;
     } catch (err) {
-      setError(err.message || "Invalid email or password");
+      setError(err.message || t('authPage.loginError'));
     } finally {
       setLoading(false);
     }
@@ -39,13 +39,13 @@ export default function Login() {
   return (
     <AuthLayout
       icon={LogIn}
-      title="Welcome back"
-      subtitle="Log in to your account"
+      title={t('authPage.welcomeBack')}
+      subtitle={t('authPage.loginSubtitle')}
       footer={
-        <span className="text-sm text-muted-foreground flex items-center justify-center gap-1.5">
-          <ShieldCheck className="h-3.5 w-3.5" />
-          Access is invite-only. Contact your administrator for an account.
-        </span>
+        <>
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+          {t('authPage.inviteOnly')}
+        </>
       }
     >
       <Button
@@ -54,7 +54,7 @@ export default function Login() {
         onClick={handleGoogle}
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
+        {t('authPage.continueGoogle')}
       </Button>
 
       <div className="relative mb-6">
@@ -62,7 +62,7 @@ export default function Login() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
+          <span className="bg-card px-3 text-muted-foreground">{t('authPage.or')}</span>
         </div>
       </div>
 
@@ -74,7 +74,7 @@ export default function Login() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('authPage.email')}</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -82,7 +82,7 @@ export default function Login() {
               type="email"
               autoComplete="email"
               autoFocus
-              placeholder="you@example.com"
+              placeholder={t('authPage.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 h-12"
@@ -92,9 +92,9 @@ export default function Login() {
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('authPage.password')}</Label>
             <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-              Forgot password?
+              {t('authPage.forgotPassword')}
             </Link>
           </div>
           <div className="relative">
@@ -115,10 +115,10 @@ export default function Login() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Logging in...
+              {t('authPage.loggingIn')}
             </>
           ) : (
-            "Log in"
+            t('authPage.logIn')
           )}
         </Button>
       </form>

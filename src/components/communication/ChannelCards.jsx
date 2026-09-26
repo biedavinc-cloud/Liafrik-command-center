@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { CheckCircle2, AlertTriangle, Loader2, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n/I18nProvider';
 import ChannelLogo from './ChannelLogos';
 import ChannelConfigDialog from './ChannelConfigDialog';
 
 export default function ChannelCards({ channels, isLoading }) {
+  const { t } = useT();
   const [configChannel, setConfigChannel] = useState(null);
 
   if (isLoading) {
@@ -36,15 +38,15 @@ export default function ChannelCards({ channels, isLoading }) {
             <div className="mt-0.5 text-[10px] leading-tight text-muted-foreground line-clamp-2">{ch.description}</div>
             <div className="mt-auto flex items-center gap-1.5 pt-2.5">
               <div className={cn('rounded px-1.5 py-0.5 text-center text-[9px] font-medium uppercase tracking-wide', ch.configured ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700')}>
-                {ch.configured ? 'Ready' : 'Needs Config'}
+                {ch.configured ? t('communication.ready') : t('communication.needsConfig')}
               </div>
               {ch.composable === false && (
-                <span className="rounded bg-muted px-1.5 py-0.5 text-[8.5px] font-medium uppercase tracking-wide text-muted-foreground">Auto</span>
+                <span className="rounded bg-muted px-1.5 py-0.5 text-[8.5px] font-medium uppercase tracking-wide text-muted-foreground">{t('communication.auto')}</span>
               )}
               <button
                 onClick={() => setConfigChannel(ch.key)}
                 className="ml-auto flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                title="Configure"
+                title={t('communication.configure')}
               >
                 <Settings className="h-3.5 w-3.5" />
               </button>

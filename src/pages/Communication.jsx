@@ -21,16 +21,16 @@ export default function Communication() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Communication Center"
-        subtitle="Unified internal staff messaging and multi-channel client communication"
-        breadcrumbs={[{ label: 'Communication' }]}
+        title={t('communication.title')}
+        subtitle={t('communication.subtitle')}
+        breadcrumbs={[{ label: t('communication.title') }]}
         actions={
           <div className="flex rounded-lg border p-0.5">
             <button onClick={() => setMode('internal')} className={cn('flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-colors', mode === 'internal' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground')}>
-              <Users className="h-3.5 w-3.5" /> Internal (Staff)
+              <Users className="h-3.5 w-3.5" /> {t('communication.internal')}
             </button>
             <button onClick={() => setMode('external')} className={cn('flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-colors', mode === 'external' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground')}>
-              <Globe className="h-3.5 w-3.5" /> External (Clients)
+              <Globe className="h-3.5 w-3.5" /> {t('communication.external')}
             </button>
           </div>
         }
@@ -209,8 +209,8 @@ function ExternalMessaging() {
       <div className="flex items-center gap-2 rounded-md border border-brand/30 bg-brand-soft/40 px-4 py-2.5">
         <Mail className="h-4 w-4 text-brand" />
         <div className="flex-1">
-          <span className="text-[12px] font-medium">{ready} of {channels.length} channels ready</span>
-          <span className="ml-2 text-[11px] text-muted-foreground">Click the ⚙ settings icon on any channel card to configure it</span>
+          <span className="text-[12px] font-medium">{t('communication.channelsReady', { n: ready, total: channels.length })}</span>
+          <span className="ml-2 text-[11px] text-muted-foreground">{t('communication.configHint')}</span>
         </div>
       </div>
       <ChannelCards channels={channels} isLoading={isLoading} />

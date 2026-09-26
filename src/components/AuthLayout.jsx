@@ -1,9 +1,11 @@
 import React from "react";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 const AUTH_BG =
   "https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/26adbfa20_mohamed_hassan-vpn-4046047_1920.jpg";
 
 export default function AuthLayout({ icon: _icon, title, subtitle, footer, children }) {
+  const { t } = useT();
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Visual panel */}
@@ -27,10 +29,10 @@ export default function AuthLayout({ icon: _icon, title, subtitle, footer, child
             </div>
             <div>
               <h2 className="text-[26px] font-semibold leading-snug text-white/95 max-w-sm">
-                Secure operational control for the Liafrik ecosystem.
+                {t('authPage.secureTitle')}
               </h2>
               <p className="mt-3 text-[13px] leading-relaxed text-white/55 max-w-sm">
-                Private, invite-only access. Every action is audited and correlated.
+                {t('authPage.secureDesc')}
               </p>
             </div>
             <div className="text-[10px] font-medium tracking-[0.18em] text-white/35">
@@ -54,7 +56,9 @@ export default function AuthLayout({ icon: _icon, title, subtitle, footer, child
             {children}
           </div>
           {footer && (
-            <p className="text-center text-sm text-muted-foreground mt-6">{footer}</p>
+            <div className="flex flex-wrap items-center justify-center gap-1.5 text-center text-sm text-muted-foreground mt-6">
+              {footer}
+            </div>
           )}
         </div>
       </div>

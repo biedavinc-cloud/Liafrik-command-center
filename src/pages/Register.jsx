@@ -11,8 +11,10 @@ import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { safeReturnTo } from "@/lib/authReturnTo";
 import { useAuth } from "@/lib/AuthContext";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function Register() {
+  const { t } = useT();
   const { isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
   const [inviteToken, setInviteToken] = useState(null);
@@ -28,7 +30,6 @@ export default function Register() {
   const [otpCode, setOtpCode] = useState("");
   const [completing, setCompleting] = useState(false);
 
-  // Validate invite token on load
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("invite");
@@ -51,14 +52,13 @@ export default function Register() {
       .finally(() => setValidating(false));
   }, []);
 
-  // If already authenticated (e.g., after Google OAuth redirect), complete the invitation
   useEffect(() => {
     if (isAuthenticated && !isLoadingAuth && inviteToken && !completing && invitation) {
       setCompleting(true);
       base44.functions.invoke("completeInvitation", { token: inviteToken })
         .then(() => { window.location.href = safeReturnTo(); })
         .catch((e) => {
-          setError("Failed to activate account: " + (e.message || "Unknown error"));
+          setError(t('authPage.activateFailed') + ": " + (e.message || ""));
           setCompleting(false);
         });
     }
@@ -68,11 +68,11 @@ export default function Register() {
     e.preventDefault();
     setError("");
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t('authPage.passwordMismatch'));
       return;
     }
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t('authPage.passwordTooShort'));
       return;
     }
     setLoading(true);
@@ -80,7 +80,7 @@ export default function Register() {
       await base44.auth.register({ email, password });
       setShowOtp(true);
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || t('authPage.activateFailed'));
     } finally {
       setLoading(false);
     }
@@ -93,7 +93,6 @@ export default function Register() {
       const result = await base44.auth.verifyOtp({ email, otpCode });
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
-        // Complete the invitation — activate the administrator record
         if (inviteToken) {
           try {
             await base44.functions.invoke("completeInvitation", { token: inviteToken });
@@ -104,7 +103,7 @@ export default function Register() {
       }
       window.location.href = safeReturnTo();
     } catch (err) {
-      setError(err.message || "Invalid verification code");
+      setError(err.message || t('authPage.invalidCode'));
     } finally {
       setLoading(false);
     }
@@ -114,9 +113,9 @@ export default function Register() {
     setError("");
     try {
       await base44.auth.resendOtp(email);
-      toast({ title: "Code sent", description: "Check your email for the new code." });
+      toast({ title: t('authPage.codeSent'), description: t('authPage.codeSentDesc') });
     } catch (err) {
-      setError(err.message || "Failed to resend code");
+      setError(err.message || t('authPage.resendFailed'));
     }
   };
 
@@ -125,60 +124,56 @@ export default function Register() {
     base44.auth.loginWithProvider("google", returnTo);
   };
 
-  // Loading state — validating invitation
   if (validating) {
     return (
-      <AuthLayout icon={ShieldCheck} title="Validating invitation" subtitle="Please wait...">
+      <AuthLayout icon={ShieldCheck} title={t('authPage.validatingInvite')} subtitle={t('authPage.pleaseWait')}>
         <div className="flex flex-col items-center gap-3 py-8">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Verifying your invitation...</p>
+          <p className="text-sm text-muted-foreground">{t('authPage.verifyingInvite')}</p>
         </div>
       </AuthLayout>
     );
   }
 
-  // No token or invalid invitation
   if (!invitation) {
     const errorMessages = {
-      no_token: "Access to the Command Center is invite-only. You need a valid invitation link to create an account.",
-      not_found: "This invitation could not be found. Please contact your administrator for a new invitation.",
-      expired: "This invitation has expired. Please request a new invitation from your administrator.",
-      used: "This invitation has already been used. If you already have an account, please log in.",
-      revoked: "This invitation has been revoked. Please contact your administrator.",
-      error: "Failed to validate your invitation. Please try again or contact your administrator.",
-      invalid: "This invitation is invalid. Please contact your administrator.",
+      no_token: t('authPage.errNoToken'),
+      not_found: t('authPage.errNotFound'),
+      expired: t('authPage.errExpired'),
+      used: t('authPage.errUsed'),
+      revoked: t('authPage.errRevoked'),
+      error: t('authPage.errError'),
+      invalid: t('authPage.errInvalid'),
     };
     return (
-      <AuthLayout icon={AlertCircle} title="Invitation required" subtitle="Access is invite-only">
+      <AuthLayout icon={AlertCircle} title={t('authPage.invitationRequired')} subtitle={t('authPage.accessInviteOnly')}>
         <div className="mb-4 p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
           {errorMessages[inviteError] || errorMessages.invalid}
         </div>
         <Button variant="outline" className="w-full h-12 font-medium" onClick={() => navigate("/login")}>
-          Go to login
+          {t('authPage.goToLogin')}
         </Button>
       </AuthLayout>
     );
   }
 
-  // Completing invitation after Google login
   if (completing) {
     return (
-      <AuthLayout icon={ShieldCheck} title="Activating your account" subtitle="Almost there...">
+      <AuthLayout icon={ShieldCheck} title={t('authPage.activatingAccount')} subtitle={t('authPage.almostThere')}>
         <div className="flex flex-col items-center gap-3 py-8">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Activating your administrator access...</p>
+          <p className="text-sm text-muted-foreground">{t('authPage.activatingAccess')}</p>
         </div>
       </AuthLayout>
     );
   }
 
-  // OTP verification
   if (showOtp) {
     return (
       <AuthLayout
         icon={Mail}
-        title="Verify your email"
-        subtitle={`We sent a code to ${email}`}
+        title={t('authPage.verifyEmail')}
+        subtitle={t('authPage.sentCodeTo', { email })}
       >
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
@@ -211,33 +206,32 @@ export default function Register() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Verifying...
+              {t('authPage.verifying')}
             </>
           ) : (
-            "Verify & activate"
+            t('authPage.verifyActivate')
           )}
         </Button>
         <p className="text-center text-sm text-muted-foreground mt-4">
-          Didn't receive the code?{" "}
+          {t('authPage.noCode')}{" "}
           <button onClick={handleResend} className="text-primary font-medium hover:underline">
-            Resend
+            {t('authPage.resend')}
           </button>
         </p>
       </AuthLayout>
     );
   }
 
-  // Registration form (invite-only)
   return (
     <AuthLayout
       icon={UserPlus}
-      title="Accept your invitation"
-      subtitle={`Welcome, ${invitation.full_name || "team member"}`}
+      title={t('authPage.acceptInvite')}
+      subtitle={t('authPage.welcomeName', { name: invitation.full_name || '' })}
       footer={
         <span className="text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t('authPage.alreadyAccount')}{" "}
           <Link to="/login" className="text-primary font-medium hover:underline">
-            Log in
+            {t('authPage.logIn')}
           </Link>
         </span>
       }
@@ -245,7 +239,7 @@ export default function Register() {
       <div className="mb-4 p-3 rounded-lg bg-brand-soft/40 border border-brand/30 text-sm">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-brand shrink-0" />
-          <span>You were invited to join the Liafrik Command Center. Create your password below to activate your account.</span>
+          <span>{t('authPage.inviteBanner')}</span>
         </div>
       </div>
 
@@ -255,7 +249,7 @@ export default function Register() {
         onClick={handleGoogle}
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
+        {t('authPage.continueGoogle')}
       </Button>
 
       <div className="relative mb-6">
@@ -263,7 +257,7 @@ export default function Register() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
+          <span className="bg-card px-3 text-muted-foreground">{t('authPage.or')}</span>
         </div>
       </div>
 
@@ -275,7 +269,7 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('authPage.email')}</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -288,7 +282,7 @@ export default function Register() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t('authPage.password')}</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -305,7 +299,7 @@ export default function Register() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
+          <Label htmlFor="confirm">{t('authPage.confirmPassword')}</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -324,10 +318,10 @@ export default function Register() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Creating account...
+              {t('authPage.creatingAccount')}
             </>
           ) : (
-            "Create account & activate"
+            t('authPage.createActivate')
           )}
         </Button>
       </form>

@@ -4,20 +4,22 @@ import Panel from '@/components/kit/Panel';
 import EmptyState from '@/components/kit/EmptyState';
 import ChannelLogo from './ChannelLogos';
 import { CheckCircle2, XCircle, Clock, MessageSquare } from 'lucide-react';
+import { useT } from '@/lib/i18n/I18nProvider';
 import { cn } from '@/lib/utils';
 
 const STATUS_ICONS = { sent: CheckCircle2, failed: XCircle, pending: Clock };
 const STATUS_COLORS = { sent: 'text-emerald-600', failed: 'text-rose-600', pending: 'text-amber-600' };
 
 export default function MessageLog() {
+  const { t, fmt } = useT();
   const { data: messages = [], isLoading } = useOutboundMessages();
 
   return (
-    <Panel title="Recent Outbound Messages" subtitle="Audit trail of all client communications">
+    <Panel title={t('communication.recentMessages')} subtitle={t('communication.messageLogSub')}>
       {isLoading ? (
         <div className="flex justify-center py-8"><div className="h-5 w-5 border-2 border-muted border-t-brand rounded-full animate-spin" /></div>
       ) : messages.length === 0 ? (
-        <EmptyState title="No messages sent yet" description="Your outbound communications will appear here" icon={MessageSquare} />
+        <EmptyState title={t('communication.noMessages')} description={t('communication.noMessagesDesc')} icon={MessageSquare} />
       ) : (
         <div className="divide-y">
           {messages.slice(0, 20).map((msg) => {
@@ -37,7 +39,7 @@ export default function MessageLog() {
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1">
                   <StatusIcon className={cn('h-3.5 w-3.5', STATUS_COLORS[msg.status])} />
-                  <span className="text-[9.5px] text-muted-foreground">{new Date(msg.created_date).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="text-[9.5px] text-muted-foreground">{fmt.dateTime(msg.created_date)}</span>
                 </div>
               </div>
             );
