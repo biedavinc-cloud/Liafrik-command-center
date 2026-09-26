@@ -640,6 +640,11 @@ const DDL: string[] = [
     correlation_id TEXT
   )`,
 
+  // PSP secret storage — allow configuring PSP keys directly from the PSP Center UI
+  `ALTER TABLE payment_providers ADD COLUMN IF NOT EXISTS secret_value TEXT`,
+  `ALTER TABLE payment_providers ADD COLUMN IF NOT EXISTS webhook_secret_value TEXT`,
+  `ALTER TABLE payment_providers ADD COLUMN IF NOT EXISTS site_id_value TEXT`,
+
   `CREATE INDEX IF NOT EXISTS idx_payment_providers_provider ON payment_providers(provider)`,
   `CREATE INDEX IF NOT EXISTS idx_payment_links_created ON payment_links(created_date DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_payment_links_app ON payment_links(application_id)`,

@@ -75,13 +75,6 @@ export const usePSPs = () => useQuery({ queryKey: ['psps'], queryFn: () => R.PSP
 export const usePaymentLinks = () => useQuery({ queryKey: ['paymentLinks'], queryFn: () => R.PaymentLinks.list('-created_date'), ...opts });
 export const useStaffTasks = () => useQuery({ queryKey: ['staffTasks'], queryFn: () => R.StaffTasks.list('-created_date'), ...opts });
 export const useConversations = () => useQuery({ queryKey: ['conversations'], queryFn: () => R.Conversations.list('-last_message_at'), ...opts });
-export const useMessages = (conversationId) => useQuery({
-  queryKey: ['messages', conversationId],
-  queryFn: () => R.Messages.filter({ conversation_id: conversationId }, 'created_date'),
-  enabled: !!conversationId,
-  refetchInterval: 5000,
-  ...opts,
-});
 export function usePSPAction() {
   const qc = useQueryClient();
   return useMutation({
@@ -91,6 +84,7 @@ export function usePSPAction() {
         case 'disconnect': return R.PSP.disconnect(data);
         case 'toggle': return R.PSP.toggle(data);
         case 'test': return R.PSP.test(data);
+        case 'configure': return R.PSP.configure(data);
         default: throw new Error('Unknown PSP action');
       }
     },
@@ -100,40 +94,6 @@ export function usePSPAction() {
 export function useCreatePaymentLink() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: (data) => R.createPaymentLink(data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['paymentLinks'] }); qc.invalidateQueries({ queryKey: ['audit'] }); } });
-}
-export function useSendMessage() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (data) => {
-      const msg = await R.Messages.create({ ...data, created_date: new Date().toISOString() });
-      await R.Conversations.update(data.conversation_id, {
-        last_message: data.body.slice(0, 120),
-        last_message_at: new Date().toISOString(),
-        last_sender_id: data.sender_id,
-      });
-      return msg;
-    },
-    onSuccess: (_, variables) => {
-      qc.invalidateQueries({ queryKey: ['messages', variables.conversation_id] });
-      qc.invalidateQueries({ queryKey: ['conversations'] });
-    },
-  });
-}
-export function useCreateConversation() {
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: (data) => R.Conversations.create(data), onSuccess: () => qc.invalidateQueries({ queryKey: ['conversations'] }) });
-}
-export function useCreateTask() {
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: (data) => R.StaffTasks.create(data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['staffTasks'] }); qc.invalidateQueries({ queryKey: ['audit'] }); } });
-}
-export function useUpdateTask() {
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: ({ id, ...data }) => R.StaffTasks.update(id, data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['staffTasks'] }); qc.invalidateQueries({ queryKey: ['audit'] }); } });
-}
-export function useDeleteTask() {
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: (id) => R.StaffTasks.remove(id), onSuccess: () => { qc.invalidateQueries({ queryKey: ['staffTasks'] }); qc.invalidateQueries({ queryKey: ['audit'] }); } });
 }
 
 export function useAppBySlug(slug) {

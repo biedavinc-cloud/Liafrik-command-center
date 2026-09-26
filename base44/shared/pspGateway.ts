@@ -144,6 +144,29 @@ export function getSecretHint(providerKey: string): string {
   return `****${val.slice(-4)}`;
 }
 
+export function makeHint(value: string): string {
+  if (!value) return '';
+  return `****${value.slice(-4)}`;
+}
+
+// Read a PSP secret from the Neon database (stored via the PSP Center configure dialog).
+// Falls back to platform secrets if not in the DB.
+export async function getPSPSecretFromDB(providerKey: string, repo: any): Promise<{ secretKey: string | null; siteId: string | null }> {
+  const provider = PSP_PROVIDERS[providerKey];
+  if (!provider) return { secretKey: null, siteId: null };
+  const existing = await repo.filter({ provider: providerKey, environment: 'production' });
+  const row = existing[0];
+  const dbSecret = row?.secret_value || null;
+  const platformSecret = secrets.get(provider.secret_key_env);
+  const secretKey = dbSecret || platformSecret || null;
+  // CinetPay site_id: check DB first, then platform secret
+  let siteId = null;
+  if (providerKey === 'cinetpay') {
+    siteId = row?.site_id_value || secrets.get('PSP_CINETPAY_SITE_ID') || null;
+  }
+  return { secretKey, siteId };
+}
+
 // Create a payment link via the provider's API.
 // Each provider has its own implementation. Returns { link_url, provider_reference }.
 export async function createPaymentLink(providerKey: string, params: {
@@ -154,12 +177,12 @@ export async function createPaymentLink(providerKey: string, params: {
   customer_name?: string;
   reference?: string;
   metadata?: any;
-}): Promise<{ link_url: string; provider_reference: string }> {
+}, options?: { secretKey?: string; siteId?: string }): Promise<{ link_url: string; provider_reference: string }> {
   const provider = PSP_PROVIDERS[providerKey];
   if (!provider) throw new Error(`Unknown PSP provider: ${providerKey}`);
 
-  const secretKey = secrets.get(provider.secret_key_env);
-  if (!secretKey) throw new Error(`${provider.secret_key_env} is not configured. Set it in Settings → Secrets.`);
+  const secretKey = options?.secretKey || secrets.get(provider.secret_key_env);
+  if (!secretKey) throw new Error(`${provider.secret_key_env} is not configured. Set it in the PSP Center or Settings → Secrets.`);
 
   switch (providerKey) {
     case 'stripe':
@@ -171,7 +194,7 @@ export async function createPaymentLink(providerKey: string, params: {
     case 'korapay':
       return await createKorapayLink(secretKey, params);
     case 'cinetpay':
-      return await createCinetPayLink(secretKey, params);
+      return await createCinetPayLink(secretKey, params, options?.siteId);
     default:
       throw new Error(`${provider.display_name} API integration is not yet implemented. Configure the secret and contact support to enable it.`);
   }
@@ -277,9 +300,9 @@ async function createKorapayLink(secretKey: string, p: any) {
   return { link_url: data.data.checkout_url, provider_reference: data.data.reference };
 }
 
-async function createCinetPayLink(secretKey: string, p: any) {
-  const siteId = secrets.get('PSP_CINETPAY_SITE_ID');
-  if (!siteId) throw new Error('PSP_CINETPAY_SITE_ID is not configured. Set it in Settings → Secrets.');
+async function createCinetPayLink(secretKey: string, p: any, siteIdOverride?: string) {
+  const siteId = siteIdOverride || secrets.get('PSP_CINETPAY_SITE_ID');
+  if (!siteId) throw new Error('CinetPay Site ID is not configured. Set it in the PSP Center or Settings → Secrets.');
   const res = await fetch('https://api-checkout.cinetpay.com/v2/payment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

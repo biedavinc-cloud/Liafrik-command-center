@@ -1,18 +1,19 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { usePSPs, usePSPAction } from '@/lib/data/hooks';
 import PageHeader from '@/components/kit/PageHeader';
 import { Button } from '@/components/ui/button';
-import { Loader2, Check, X, Zap, Settings as SettingsIcon } from 'lucide-react';
+import { Loader2, Check, X, Zap, Settings as SettingsIcon, KeyRound } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Image } from '@/components/ui/image';
+import PspConfigDialog from '@/components/payments/PspConfigDialog';
 
 export default function PspCenter() {
   const { t } = useT();
   const { data: psps = [], isLoading } = usePSPs();
   const pspAction = usePSPAction();
   const { toast } = useToast();
+  const [configPsp, setConfigPsp] = useState(null);
 
   const handleAction = async (action, provider, extra = {}) => {
     try {
@@ -27,6 +28,8 @@ export default function PspCenter() {
     }
   };
 
+  const zoomKeys = ['stripe', 'flutterwave', 'payunit', 'cinetpay'];
+
   return (
     <div className="space-y-5">
       <PageHeader title={t('psp.title')} subtitle={t('psp.subtitle')} breadcrumbs={[{ label: t('psp.title') }]} />
@@ -37,9 +40,9 @@ export default function PspCenter() {
           {psps.map((psp) => (
             <div key={psp.key} className="surface p-5 space-y-3">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white border p-1">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white border ${zoomKeys.includes(psp.key) ? 'p-0' : 'p-1'}`}>
                   {psp.logo_url ? (
-                    <Image src={psp.logo_url} alt={psp.display_name} className="h-full w-full" fittingType="fit" />
+                    <Image src={psp.logo_url} alt={psp.display_name} className="h-full w-full" fittingType={zoomKeys.includes(psp.key) ? 'fill' : 'fit'} />
                   ) : (
                     <span className="text-sm font-bold" style={{ color: psp.color }}>{psp.display_name[0]}</span>
                   )}
@@ -86,17 +89,25 @@ export default function PspCenter() {
                     </Button>
                   </>
                 ) : psp.secret_configured ? (
-                  <Button size="sm" className="h-7 text-[11px]" onClick={() => handleAction('connect', psp.key)} disabled={pspAction.isPending}>
-                    {t('psp.connect')}
-                  </Button>
+                  <>
+                    <Button size="sm" className="h-7 text-[11px]" onClick={() => handleAction('connect', psp.key)} disabled={pspAction.isPending}>
+                      {t('psp.connect')}
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => setConfigPsp(psp)}>
+                      <KeyRound className="h-3 w-3 mr-1" />Update key
+                    </Button>
+                  </>
                 ) : (
-                  <Link to="/settings"><Button size="sm" variant="outline" className="h-7 text-[11px]"><SettingsIcon className="h-3 w-3 mr-1" />{t('psp.configureSecret')}</Button></Link>
+                  <Button size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => setConfigPsp(psp)}>
+                    <SettingsIcon className="h-3 w-3 mr-1" />{t('psp.configureSecret')}
+                  </Button>
                 )}
               </div>
             </div>
           ))}
         </div>
       )}
+      <PspConfigDialog psp={configPsp} open={!!configPsp} onOpenChange={(v) => !v && setConfigPsp(null)} />
     </div>
   );
 }

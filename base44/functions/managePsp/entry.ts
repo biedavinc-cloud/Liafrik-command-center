@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
 import { neonRepo } from '../../shared/neonRepo.ts';
-import { PSP_PROVIDERS, isPSPSecretSet, getSecretHint } from '../../shared/pspGateway.ts';
+import { PSP_PROVIDERS, isPSPSecretSet, getSecretHint, makeHint } from '../../shared/pspGateway.ts';
 
 // PSP management — list, connect, disconnect, toggle, test.
 // Credentials are stored as server-side secrets (Settings → Secrets).
@@ -25,14 +25,17 @@ export default async function(req: Request): Promise<Response> {
       const result = [];
       for (const [key, def] of Object.entries(PSP_PROVIDERS)) {
         const config = storedMap[key];
-        const secretSet = isPSPSecretSet(key);
+        const platformSecretSet = isPSPSecretSet(key);
+        const dbSecretSet = !!(config?.secret_value);
+        const secretSet = platformSecretSet || dbSecretSet;
+        const hint = config?.credential_hint || (dbSecretSet ? makeHint(config.secret_value) : (platformSecretSet ? getSecretHint(key) : null));
         result.push({
           ...def,
           id: config?.id,
           status: config?.status || (secretSet ? 'configured' : 'not_connected'),
           enabled: config?.enabled || false,
           environment: config?.environment || 'production',
-          credential_hint: config?.credential_hint || (secretSet ? getSecretHint(key) : null),
+          credential_hint: hint,
           merchant_id: config?.merchant_id,
           last_tested: config?.last_tested,
           last_test_result: config?.last_test_result,
@@ -42,17 +45,64 @@ export default async function(req: Request): Promise<Response> {
       return Response.json(result);
     }
 
+    if (operation === 'configure') {
+      const { provider, secret_value, webhook_secret_value, site_id_value, environment } = body;
+      const def = PSP_PROVIDERS[provider];
+      if (!def) return Response.json({ error: 'Unknown provider' }, { status: 400 });
+      if (!secret_value || secret_value.length < 6) return Response.json({ error: 'API key must be at least 6 characters' }, { status: 400 });
+
+      const env = environment || 'production';
+      const existing = await repo.filter({ provider, environment: env });
+      const hint = makeHint(secret_value);
+
+      let result;
+      const updateData: any = {
+        credential_hint: hint,
+        configured_by: user.email,
+      };
+      if (secret_value) updateData.secret_value = secret_value;
+      if (webhook_secret_value !== undefined) updateData.webhook_secret_value = webhook_secret_value;
+      if (site_id_value !== undefined) updateData.site_id_value = site_id_value;
+
+      if (existing[0]) {
+        result = await repo.update(existing[0].id, updateData);
+      } else {
+        result = await repo.create({
+          provider, display_name: def.display_name, environment: env,
+          status: 'configured', enabled: false,
+          capabilities: def.capabilities, supported_currencies: def.supported_currencies,
+          supported_countries: def.supported_countries,
+          credential_hint: hint, configured_by: user.email,
+          secret_value, webhook_secret_value: webhook_secret_value || null,
+          site_id_value: site_id_value || null,
+          correlation_id: `psp_${Date.now()}`,
+          ...updateData,
+        });
+      }
+
+      await auditRepo.create({
+        actor: user.email, actor_role: user.role, action: 'psp.configure',
+        resource: 'payment_provider', resource_id: result.id,
+        outcome: 'success', risk_level: 'high', correlation_id: `psp_${Date.now()}`,
+        after: `provider=${provider} hint=${hint}`,
+      });
+      return Response.json({ success: true, credential_hint: hint });
+    }
+
     if (operation === 'connect') {
       const { provider, environment, merchant_id } = body;
       const def = PSP_PROVIDERS[provider];
       if (!def) return Response.json({ error: 'Unknown provider' }, { status: 400 });
-      if (!isPSPSecretSet(provider)) return Response.json({
-        error: `Secret ${def.secret_key_env} is not configured. Set it in Settings → Secrets, then connect.`,
-      }, { status: 400 });
 
       const env = environment || 'production';
       const existing = await repo.filter({ provider, environment: env });
-      const hint = getSecretHint(provider);
+      const dbSecret = existing[0]?.secret_value;
+      const dbSecretSet = !!dbSecret;
+      if (!isPSPSecretSet(provider) && !dbSecretSet) return Response.json({
+        error: `Secret ${def.secret_key_env} is not configured. Configure it in the PSP Center, then connect.`,
+      }, { status: 400 });
+
+      const hint = dbSecret ? makeHint(dbSecret) : getSecretHint(provider);
 
       let result;
       if (existing[0]) {
@@ -76,7 +126,9 @@ export default async function(req: Request): Promise<Response> {
         resource: 'payment_provider', resource_id: result.id,
         outcome: 'success', risk_level: 'high', correlation_id: `psp_${Date.now()}`,
       });
-      return Response.json(result);
+      // Never expose secret values in the response
+      const { secret_value, webhook_secret_value, site_id_value, ...safeResult } = result;
+      return Response.json(safeResult);
     }
 
     if (operation === 'disconnect') {
@@ -104,13 +156,14 @@ export default async function(req: Request): Promise<Response> {
       const { provider } = body;
       const def = PSP_PROVIDERS[provider];
       if (!def) return Response.json({ error: 'Unknown provider' }, { status: 400 });
-      const secretSet = isPSPSecretSet(provider);
+      const existing = await repo.filter({ provider });
+      const dbSecretSet = !!(existing[0]?.secret_value);
+      const secretSet = isPSPSecretSet(provider) || dbSecretSet;
       const result = {
         provider, secret_configured: secretSet,
         status: secretSet ? 'passed' : 'failed',
         message: secretSet ? 'API key is configured' : `Secret ${def.secret_key_env} is not set`,
       };
-      const existing = await repo.filter({ provider });
       if (existing[0]) {
         await repo.update(existing[0].id, {
           last_tested: new Date().toISOString(),

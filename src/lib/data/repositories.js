@@ -86,5 +86,6 @@ export const PSP = {
   disconnect: (data) => base44.functions.invoke('managePsp', { operation: 'disconnect', ...data }).then(r => r.data),
   toggle: (data) => base44.functions.invoke('managePsp', { operation: 'toggle', ...data }).then(r => r.data),
   test: (data) => base44.functions.invoke('managePsp', { operation: 'test', ...data }).then(r => r.data),
+  configure: (data) => base44.functions.invoke('managePsp', { operation: 'configure', ...data }).then(r => r.data),
 };
 export const createPaymentLink = (data) => base44.functions.invoke('createPaymentLink', data).then(r => r.data);

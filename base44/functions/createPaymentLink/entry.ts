@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
 import { neonRepo } from '../../shared/neonRepo.ts';
-import { createPaymentLink as pspCreateLink, getPSPProvider } from '../../shared/pspGateway.ts';
+import { createPaymentLink as pspCreateLink, getPSPProvider, getPSPSecretFromDB } from '../../shared/pspGateway.ts';
 
 // Create a payment link via a configured PSP.
 // The PSP's secret key is read server-side — never exposed to the frontend.
@@ -21,14 +21,18 @@ export default async function(req: Request): Promise<Response> {
     const def = getPSPProvider(provider);
     if (!def) return Response.json({ error: 'Unknown PSP provider' }, { status: 400 });
 
-    // Create the payment link via the PSP gateway (server-side secret)
+    // Read the PSP secret from the DB (configured via PSP Center) with fallback to platform secrets
+    const pspRepo = neonRepo('PaymentProvider');
+    const { secretKey, siteId } = await getPSPSecretFromDB(provider, pspRepo);
+    if (!secretKey) return Response.json({ error: `${def.secret_key_env} is not configured. Configure it in the PSP Center.` }, { status: 400 });
+
     const correlationId = `paylink_${Date.now()}`;
     let linkResult;
     try {
       linkResult = await pspCreateLink(provider, {
         amount: Number(amount), currency, description: description || 'Payment',
         customer_email, customer_name, reference: reference || correlationId, metadata,
-      });
+      }, { secretKey, siteId });
     } catch (e) {
       // Audit the failure
       const auditRepo = neonRepo('AuditEvent');
