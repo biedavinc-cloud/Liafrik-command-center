@@ -462,7 +462,7 @@ const fr = {
     paymentRef: 'Référence de paiement', notes: 'Notes',
     open: 'Ouverte', inProgress: 'En cours', completed: 'Terminée', cancelled: 'Annulée',
     low: 'Basse', medium: 'Moyenne', high: 'Haute', urgent: 'Urgente',
-    noTasks: 'Aucune tâche', noTasksBody: 'Créez une tâche pour affecter du travail à votre équipe.',
+    noTasks: 'Aucune tâche', noTasksBody: 'Créez une tâche pour affecter du travail à votre équipe.', all: 'Toutes',
     title_field: 'Titre', description: 'Description',
   },
   currency: {

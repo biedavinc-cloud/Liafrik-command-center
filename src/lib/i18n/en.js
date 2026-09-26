@@ -461,7 +461,7 @@ const en = {
     paymentRef: 'Payment reference', notes: 'Notes',
     open: 'Open', inProgress: 'In progress', completed: 'Completed', cancelled: 'Cancelled',
     low: 'Low', medium: 'Medium', high: 'High', urgent: 'Urgent',
-    noTasks: 'No tasks', noTasksBody: 'Create a task to assign work to your team.',
+    noTasks: 'No tasks', noTasksBody: 'Create a task to assign work to your team.', all: 'All',
     title_field: 'Title', description: 'Description',
   },
   currency: {

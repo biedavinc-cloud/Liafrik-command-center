@@ -48,7 +48,7 @@ export default function Tasks() {
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-44 h-8 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('common.confirm') === 'Confirm' ? 'All' : 'Toutes'}</SelectItem>
+            <SelectItem value="all">{t('tasks.all')}</SelectItem>
             <SelectItem value="open">{t('tasks.open')}</SelectItem>
             <SelectItem value="in_progress">{t('tasks.inProgress')}</SelectItem>
             <SelectItem value="completed">{t('tasks.completed')}</SelectItem>
