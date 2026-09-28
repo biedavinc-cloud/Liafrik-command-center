@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useT } from '@/lib/i18n/I18nProvider';
@@ -58,7 +59,7 @@ export default function DeploymentPipeline() {
   }), [deployments]);
 
   const triggerDeploy = useAction(async ({ appId, env, version }) => {
-    return base44.functions.invoke('neonData', {
+    return invokeFunction('neonData', {
       entity: 'Deployment', operation: 'create',
       data: { application_id: appId, environment: env, version: version || 'v1.0.0', status: 'building', source: 'manual', deployed_at: new Date().toISOString() }
     });

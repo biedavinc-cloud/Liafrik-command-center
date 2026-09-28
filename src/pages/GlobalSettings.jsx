@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAuth } from '@/lib/AuthContext';
@@ -27,11 +28,11 @@ export default function GlobalSettings() {
   const safeModeActive = sysState.safe_mode_enabled || false;
 
   const toggleSafeMode = useAction(async (enabled) => {
-    return base44.functions.invoke('neonData', { entity: 'SystemState', operation: 'update', id: sysState.id, data: { safe_mode_enabled: enabled } });
+    return invokeFunction('neonData', { entity: 'SystemState', operation: 'update', id: sysState.id, data: { safe_mode_enabled: enabled } });
   }, ['systemState']);
 
   const updateMaintenance = useAction(async (mode) => {
-    return base44.functions.invoke('neonData', { entity: 'SystemState', operation: 'update', id: sysState.id, data: { maintenance_mode: mode } });
+    return invokeFunction('neonData', { entity: 'SystemState', operation: 'update', id: sysState.id, data: { maintenance_mode: mode } });
   }, ['systemState']);
 
   const handleSaveBrand = () => {

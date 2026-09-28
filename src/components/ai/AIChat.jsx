@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useRef, useState } from 'react';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -35,7 +36,7 @@ export default function AIChat() {
     setLoading(true);
     scrollToBottom();
     try {
-      const res = await base44.functions.invoke('aiQuery', { prompt });
+      const res = await invokeFunction('aiQuery', { prompt });
       setMessages((prev) => [...prev, { role: 'ai', result: res.data, error: res.data?.error }]);
     } catch (err) {
       setMessages((prev) => [...prev, { role: 'ai', error: err.message }]);

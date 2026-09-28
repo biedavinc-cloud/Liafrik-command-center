@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { Activity } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -20,7 +21,7 @@ export default function AIInsights() {
     setError(null);
     setResult(null);
     try {
-      const res = await base44.functions.invoke('aiAnalyze', { focus: focus.trim() || undefined });
+      const res = await invokeFunction('aiAnalyze', { focus: focus.trim() || undefined });
       setResult(res.data);
       if (res.data?.error) setError(res.data.error);
     } catch (err) {

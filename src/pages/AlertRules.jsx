@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useNotificationRules, useAction } from '@/lib/data/hooks';
@@ -45,17 +46,17 @@ export default function AlertRules() {
 
   const saveRule = useAction(async (data) => {
     if (editing) {
-      return base44.functions.invoke('neonData', { entity: 'NotificationRule', operation: 'update', id: editing.id, data });
+      return invokeFunction('neonData', { entity: 'NotificationRule', operation: 'update', id: editing.id, data });
     }
-    return base44.functions.invoke('neonData', { entity: 'NotificationRule', operation: 'create', data });
+    return invokeFunction('neonData', { entity: 'NotificationRule', operation: 'create', data });
   }, ['notificationRules']);
 
   const deleteRule = useAction(async (id) => {
-    return base44.functions.invoke('neonData', { entity: 'NotificationRule', operation: 'delete', id });
+    return invokeFunction('neonData', { entity: 'NotificationRule', operation: 'delete', id });
   }, ['notificationRules']);
 
   const toggleRule = useAction(async ({ id, enabled }) => {
-    return base44.functions.invoke('neonData', { entity: 'NotificationRule', operation: 'update', id, data: { enabled } });
+    return invokeFunction('neonData', { entity: 'NotificationRule', operation: 'update', id, data: { enabled } });
   }, ['notificationRules']);
 
   const openForm = (rule = null) => {

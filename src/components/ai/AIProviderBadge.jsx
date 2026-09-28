@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, Loader2, Cpu } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -10,7 +11,7 @@ export default function AIProviderBadge() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.functions.invoke('aiStatus', {})
+    invokeFunction('aiStatus', {})
       .then((r) => setStatus(r.data))
       .catch(() => setStatus(null))
       .finally(() => setLoading(false));

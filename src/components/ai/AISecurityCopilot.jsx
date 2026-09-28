@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { Shield } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -18,7 +19,7 @@ export default function AISecurityCopilot() {
     setError(null);
     setResult(null);
     try {
-      const res = await base44.functions.invoke('aiSecurity', {});
+      const res = await invokeFunction('aiSecurity', {});
       setResult(res.data);
       if (res.data?.error) setError(res.data.error);
     } catch (err) {

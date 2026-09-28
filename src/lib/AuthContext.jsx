@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
-import { appParams } from '@/lib/app-params';
+import { invokeFunction } from '@/lib/api';
+import * as neonAuth from '@/lib/neonAuth';
 
 const AuthContext = createContext();
 
@@ -18,62 +18,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAppState = async () => {
-    try {
-      setIsLoadingPublicSettings(true);
-      setAuthError(null);
-      
-      try {
-        const publicSettings = await base44.app.getPublicSettings();
-        setAppPublicSettings(publicSettings);
-        
-        // If we got the app public settings successfully, check if user is authenticated
-        if (appParams.token) {
-          await checkUserAuth();
-        } else {
-          setIsLoadingAuth(false);
-          setIsAuthenticated(false);
-          setAuthChecked(true);
-        }
-        setIsLoadingPublicSettings(false);
-      } catch (appError) {
-        console.error('App state check failed:', appError);
-        
-        // Handle app-level errors
-        if (appError.status === 403 && appError.data?.extra_data?.reason) {
-          const reason = appError.data.extra_data.reason;
-          if (reason === 'auth_required') {
-            setAuthError({
-              type: 'auth_required',
-              message: 'Authentication required'
-            });
-          } else if (reason === 'user_not_registered') {
-            setAuthError({
-              type: 'user_not_registered',
-              message: 'User not registered for this app'
-            });
-          } else {
-            setAuthError({
-              type: reason,
-              message: appError.message
-            });
-          }
-        } else {
-          setAuthError({
-            type: 'unknown',
-            message: appError.message || 'Failed to load app'
-          });
-        }
-        setIsLoadingPublicSettings(false);
-        setIsLoadingAuth(false);
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      setAuthError({
-        type: 'unknown',
-        message: error.message || 'An unexpected error occurred'
-      });
-      setIsLoadingPublicSettings(false);
+    setIsLoadingPublicSettings(true);
+    setAuthError(null);
+    setAppPublicSettings({ id: 'liafrik', public_settings: {} });
+    setIsLoadingPublicSettings(false);
+    if (neonAuth.hasSession()) {
+      await checkUserAuth();
+    } else {
       setIsLoadingAuth(false);
+      setIsAuthenticated(false);
+      setAuthChecked(true);
     }
   };
 
@@ -81,13 +35,16 @@ export const AuthProvider = ({ children }) => {
     try {
       // Now check if the user is authenticated
       setIsLoadingAuth(true);
-      const currentUser = await base44.auth.me();
+      const neonUser = await neonAuth.getUser();
+      if (!neonUser) throw Object.assign(new Error('Not authenticated'), { status: 401 });
+      // Keep the shape the app already expects (id, email, full_name, role)
+      const currentUser = { ...neonUser, full_name: neonUser.name, role: neonUser.role || 'user' };
 
       // Invite-only access control: verify the user has a valid Administrator record.
       // Platform admins (role === 'admin', i.e. the founder) bypass this check.
       if (currentUser.role !== 'admin') {
         try {
-          const admins = await base44.functions.invoke('neonData', {
+          const admins = await invokeFunction('neonData', {
             entity: 'Administrator',
             operation: 'filter',
             query: { email: currentUser.email }
@@ -141,18 +98,13 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     
-    if (shouldRedirect) {
-      // Use the SDK's logout method which handles token cleanup and redirect
-      base44.auth.logout(window.location.href);
-    } else {
-      // Just remove the token without redirect
-      base44.auth.logout();
-    }
+    neonAuth.signOut().finally(() => {
+      if (shouldRedirect) window.location.href = '/login';
+    });
   };
 
   const navigateToLogin = () => {
-    // Use the SDK's redirectToLogin method
-    base44.auth.redirectToLogin(window.location.href);
+    window.location.href = '/login';
   };
 
   return (

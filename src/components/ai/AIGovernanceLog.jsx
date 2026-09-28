@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ScrollText, Loader2 } from 'lucide-react';
@@ -13,7 +14,7 @@ export default function AIGovernanceLog() {
   const { t, fmt } = useT();
   const { data: activities, isLoading } = useQuery({
     queryKey: ['aiActivities'],
-    queryFn: () => base44.functions.invoke('neonData', {
+    queryFn: () => invokeFunction('neonData', {
       entity: 'AiActivity', operation: 'list', sort: '-created_date', limit: 100,
     }).then((r) => r.data),
     staleTime: 30_000,
