@@ -1,7 +1,8 @@
-// Shared helpers for Cloudflare Pages Functions (ported from base44/shared/neonClient.ts).
+// Shared Neon helpers for Cloudflare Pages Functions (table maps, query builders, SQL client).
 import { neon } from '@neondatabase/serverless';
+import { getEnv } from './runtime.js';
 
-export function createSql(env) {
+export function createSql(env = getEnv()) {
   const connStr = env.DATABASE_URL || env.NEON_CONNECTION_STRING;
   if (!connStr) throw new Error('DATABASE_URL is not set');
   return neon(connStr);

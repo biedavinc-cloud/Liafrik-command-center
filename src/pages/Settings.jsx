@@ -4,7 +4,6 @@ import { useT, LANGUAGES } from '@/lib/i18n/I18nProvider';
 import { useAuth } from '@/lib/AuthContext';
 import { useFounderMode } from '@/lib/hooks/useFounderMode';
 import { useSystemState, useAction } from '@/lib/data/hooks';
-import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/kit/PageHeader';
 import Panel from '@/components/kit/Panel';
 import { Button } from '@/components/ui/button';
@@ -110,7 +109,7 @@ export default function Settings() {
           {[
             { label: 'Database', value: 'Neon PostgreSQL', icon: Database },
             { label: 'AI Provider', value: 'Gemini', icon: Cpu },
-            { label: 'Auth', value: 'Base44 Secure', icon: ShieldAlert },
+            { label: 'Auth', value: 'Neon Auth', icon: ShieldAlert },
             { label: 'Region', value: 'UAE / Global', icon: Globe },
           ].map((info) => (
             <div key={info.label} className="rounded-md border p-3">

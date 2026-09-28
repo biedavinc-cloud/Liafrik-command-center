@@ -1,15 +1,12 @@
-// Backend function gateway. Functions already ported to Cloudflare Pages Functions are
-// called on /api with the Neon Auth JWT; the rest still go through Base44 until ported.
-import { base44 } from '@/api/base44Client';
+// Backend function gateway: every backend function is a Cloudflare Pages Function on /api/<kebab-name>,
+// authenticated with the Neon Auth JWT.
 import { getAccessToken } from '@/lib/neonAuth';
 
-const PORTED = { neonData: '/api/neon-data' };
+const toPath = (name) => `/api/${name.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())}`;
 
 export async function invokeFunction(name, payload = {}) {
-  const path = PORTED[name];
-  if (!path) return base44.functions.invoke(name, payload);
   const token = await getAccessToken();
-  const res = await fetch(path, {
+  const res = await fetch(toPath(name), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify(payload),

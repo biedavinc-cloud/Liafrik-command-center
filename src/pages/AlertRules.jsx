@@ -2,7 +2,6 @@ import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useNotificationRules, useAction } from '@/lib/data/hooks';
-import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/kit/PageHeader';
 import Panel from '@/components/kit/Panel';
 import EmptyState from '@/components/kit/EmptyState';

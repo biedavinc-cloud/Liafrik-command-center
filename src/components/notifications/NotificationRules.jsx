@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
-import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { useT } from '@/lib/i18n/I18nProvider';
 import Panel from '@/components/kit/Panel';
@@ -9,16 +8,19 @@ import Panel from '@/components/kit/Panel';
 const CATEGORIES = ['monitoring', 'deployment', 'security', 'api', 'webhook', 'applications'];
 
 // Rules persist on the founder's identity; delivery channels arrive with the notification service.
+const rulesKey = (user) => `lcc.notification_rules.${user?.id || 'me'}`;
+const loadRules = (user) => { try { return JSON.parse(localStorage.getItem(rulesKey(user)) || '{}'); } catch { return {}; } };
+
 export default function NotificationRules() {
   const { t } = useT();
   const { toast } = useToast();
   const { user } = useAuth();
-  const [rules, setRules] = useState(() => ({ ...Object.fromEntries(CATEGORIES.map((c) => [c, true])), ...(user?.notification_rules || {}) }));
+  const [rules, setRules] = useState(() => ({ ...Object.fromEntries(CATEGORIES.map((c) => [c, true])), ...loadRules(user) }));
 
   const toggle = async (c, v) => {
     const next = { ...rules, [c]: v };
     setRules(next);
-    await base44.auth.updateMe({ notification_rules: next });
+    try { localStorage.setItem(rulesKey(user), JSON.stringify(next)); } catch { /* ignore */ }
     toast({ title: t('settings.saved') });
   };
 

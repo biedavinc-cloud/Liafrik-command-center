@@ -7,7 +7,6 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { usePSPAction } from '@/lib/data/hooks';
 import { useToast } from '@/components/ui/use-toast';
-import { Image } from '@/components/ui/image';
 
 export default function PspConfigDialog({ psp, open, onOpenChange }) {
   const { t } = useT();
@@ -52,7 +51,7 @@ export default function PspConfigDialog({ psp, open, onOpenChange }) {
           <div className="flex items-center gap-3 mb-1">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden bg-white border p-1">
               {psp.logo_url ? (
-                <Image src={psp.logo_url} alt={psp.display_name} className="h-full w-full" fittingType="fit" />
+                <img src={psp.logo_url} alt={psp.display_name} className="h-full w-full object-contain" />
               ) : (
                 <span className="text-sm font-bold" style={{ color: psp.color }}>{psp.display_name[0]}</span>
               )}

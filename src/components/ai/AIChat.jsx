@@ -1,7 +1,6 @@
 import { invokeFunction } from '@/lib/api';
 import React, { useRef, useState } from 'react';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

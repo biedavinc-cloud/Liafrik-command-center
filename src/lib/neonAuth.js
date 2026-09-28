@@ -1,4 +1,4 @@
-// Neon Auth (Better Auth) client — plain fetch, no Base44.
+// Neon Auth (Better Auth) client — plain fetch.
 const BASE = (import.meta.env.VITE_NEON_AUTH_URL ||
   'https://ep-patient-pond-b1ee0una.neonauth.c-5.eu-central-1.aws.neon.tech/neondb/auth').replace(/\/$/, '');
 
@@ -66,7 +66,7 @@ export async function getUser() {
   const token = await getAccessToken();
   if (!token) return null;
   const { data } = await request('/get-session', { method: 'GET', bearer: store.get(K_SESSION) || token });
-  return data?.user || null;
+  return data?.user ? { ...data.user, full_name: data.user.name } : null;
 }
 
 export async function signOut() {
@@ -80,3 +80,6 @@ export const requestPasswordReset = (email) =>
 
 export const resetPassword = (newPassword, token) =>
   request('/reset-password', { body: { newPassword, token } });
+
+export const updateUser = (fields) =>
+  request('/update-user', { body: fields, bearer: store.get(K_SESSION) || undefined });

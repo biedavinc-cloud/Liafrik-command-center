@@ -12,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Image } from '@/components/ui/image';
 import PspConfigDialog from '@/components/payments/PspConfigDialog';
 import { CreditCard, Globe, CheckCircle2, AlertTriangle, Key, Webhook, TestTube, Plug, PlugZap, Unplug, Settings2, Zap, Lock } from 'lucide-react';
 
@@ -65,7 +64,7 @@ export default function PspCenter() {
                   <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-lg overflow-hidden border bg-white p-1">
                       {psp.logo_url ? (
-                        <Image src={psp.logo_url} alt={psp.display_name} className="h-full w-full" fittingType="fit" />
+                        <img src={psp.logo_url} alt={psp.display_name} className="h-full w-full object-contain" />
                       ) : (
                         <span className="text-[15px] font-bold" style={{ color: psp.color }}>{psp.display_name?.[0] || 'P'}</span>
                       )}

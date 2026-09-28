@@ -1,6 +1,5 @@
 import { invokeFunction } from '@/lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
 import * as R from './repositories';
 
 const opts = { staleTime: 30_000 };

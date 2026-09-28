@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: POST /api/neon-data  (port of base44/functions/neonData)
+// Cloudflare Pages Function: POST /api/neon-data — generic entity CRUD on Neon
 import { createSql, TABLE_MAP, serializeValue, buildWhereClause, buildSortClause, convertRow, convertRows, ident } from '../_shared/neon.js';
 import { getUser } from '../_shared/auth.js';
 

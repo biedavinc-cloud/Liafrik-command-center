@@ -11,7 +11,6 @@ import { useAction } from '@/lib/data/hooks';
 import { saveAdministrator } from '@/lib/services/identity';
 import { GLOBAL_ROLES, PERMISSION_RESOURCES } from '@/lib/rbac';
 import { ENVIRONMENTS } from '@/lib/protocol/capabilities';
-import { base44 } from '@/api/base44Client';
 import Field from '@/components/kit/Field';
 
 const EMPTY = { full_name: '', email: '', global_role: 'none', assignments: [], permissions: [] };
