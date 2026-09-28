@@ -14,16 +14,19 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const [error, setError] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
       await requestPasswordReset(email);
-    } catch {
-      // Always show success regardless
+      setSent(true);
+    } catch (err) {
+      setError(err?.message || t('authPage.resetSent'));
     } finally {
       setLoading(false);
-      setSent(true);
     }
   };
 
@@ -71,6 +74,9 @@ export default function ForgotPassword() {
               t('authPage.sendResetLink')
             )}
           </Button>
+          {error && (
+            <p className="text-sm text-destructive text-center" role="alert">{error}</p>
+          )}
         </form>
       )}
     </AuthLayout>
