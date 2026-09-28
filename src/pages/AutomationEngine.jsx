@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAutomationRules, useAction } from '@/lib/data/hooks';
@@ -39,17 +40,17 @@ export default function AutomationEngine() {
 
   const saveRule = useAction(async (data) => {
     if (editing) {
-      return base44.functions.invoke('neonData', { entity: 'AutomationRule', operation: 'update', id: editing.id, data });
+      return invokeFunction('neonData', { entity: 'AutomationRule', operation: 'update', id: editing.id, data });
     }
-    return base44.functions.invoke('neonData', { entity: 'AutomationRule', operation: 'create', data });
+    return invokeFunction('neonData', { entity: 'AutomationRule', operation: 'create', data });
   }, ['automationRules']);
 
   const toggleRule = useAction(async ({ id, enabled }) => {
-    return base44.functions.invoke('neonData', { entity: 'AutomationRule', operation: 'update', id, data: { enabled } });
+    return invokeFunction('neonData', { entity: 'AutomationRule', operation: 'update', id, data: { enabled } });
   }, ['automationRules']);
 
   const deleteRule = useAction(async (id) => {
-    return base44.functions.invoke('neonData', { entity: 'AutomationRule', operation: 'delete', id });
+    return invokeFunction('neonData', { entity: 'AutomationRule', operation: 'delete', id });
   }, ['automationRules']);
 
   const openForm = (rule = null) => {

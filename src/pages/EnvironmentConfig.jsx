@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState, useMemo } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useApplications, useAppConfigs, useAction } from '@/lib/data/hooks';
@@ -92,16 +93,16 @@ export default function EnvironmentConfig() {
 
   const saveConfig = useAction(async (data) => {
     if (editing) {
-      return base44.functions.invoke('neonData', { entity: 'AppConfig', operation: 'update', id: editing.id, data });
+      return invokeFunction('neonData', { entity: 'AppConfig', operation: 'update', id: editing.id, data });
     }
-    return base44.functions.invoke('neonData', {
+    return invokeFunction('neonData', {
       entity: 'AppConfig', operation: 'create',
       data: { ...data, application_id: app.id, application_name: app.name, environment: env, is_configured: true, last_changed_at: new Date().toISOString() }
     });
   }, ['appConfigs']);
 
   const deleteConfig = useAction(async (id) => {
-    return base44.functions.invoke('neonData', { entity: 'AppConfig', operation: 'delete', id });
+    return invokeFunction('neonData', { entity: 'AppConfig', operation: 'delete', id });
   }, ['appConfigs']);
 
   const openForm = (config = null) => {

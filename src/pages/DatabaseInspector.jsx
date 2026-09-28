@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAuth } from '@/lib/AuthContext';
@@ -44,7 +45,7 @@ export default function DatabaseInspector() {
     setError(null);
     setResults(null);
     try {
-      const res = await base44.functions.invoke('neonData', { entity: 'Application', operation: 'list', limit: 1 });
+      const res = await invokeFunction('neonData', { entity: 'Application', operation: 'list', limit: 1 });
       // Use a safe diagnostic query through neonData - we'll use the 'count' operation per table
       // For custom SQL, we need a dedicated function. For now, use count operations.
       setLoading(false);
@@ -68,7 +69,7 @@ export default function DatabaseInspector() {
           };
           const entity = entityMap[table];
           if (entity) {
-            const res = await base44.functions.invoke('neonData', { entity, operation: 'count', query: {} });
+            const res = await invokeFunction('neonData', { entity, operation: 'count', query: {} });
             counts[table] = res.data?.count ?? 0;
           }
         } catch { counts[table] = '—'; }

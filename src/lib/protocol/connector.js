@@ -1,6 +1,7 @@
 // Liafrik Control Protocol (LCP) connector abstraction.
 // All remote calls are routed server-side — the browser never talks to an app's API with credentials.
 // A future @liafrik/control-sdk implements the app side of these modules.
+import { invokeFunction } from '@/lib/api';
 import { base44 } from '@/api/base44Client';
 import { capabilityMap } from './capabilities';
 
@@ -39,6 +40,6 @@ export const isManageable = (app) =>
 export const isInMaintenance = (app) => app?.maintenance_mode === 'maintenance' || app?.maintenance_mode === 'read_only';
 
 export async function testConnection({ api_url, health_endpoint }) {
-  const res = await base44.functions.invoke('testConnection', { api_url, health_endpoint });
+  const res = await invokeFunction('testConnection', { api_url, health_endpoint });
   return res.data;
 }

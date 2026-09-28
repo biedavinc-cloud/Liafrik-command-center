@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
@@ -39,7 +40,7 @@ export default function Register() {
       return;
     }
     setInviteToken(token);
-    base44.functions.invoke("validateInvitation", { token })
+    invokeFunction("validateInvitation", { token })
       .then((res) => {
         if (res.data?.valid) {
           setInvitation(res.data);
@@ -55,7 +56,7 @@ export default function Register() {
   useEffect(() => {
     if (isAuthenticated && !isLoadingAuth && inviteToken && !completing && invitation) {
       setCompleting(true);
-      base44.functions.invoke("completeInvitation", { token: inviteToken })
+      invokeFunction("completeInvitation", { token: inviteToken })
         .then(() => { window.location.href = safeReturnTo(); })
         .catch((e) => {
           setError(t('authPage.activateFailed') + ": " + (e.message || ""));
@@ -95,7 +96,7 @@ export default function Register() {
         base44.auth.setToken(result.access_token);
         if (inviteToken) {
           try {
-            await base44.functions.invoke("completeInvitation", { token: inviteToken });
+            await invokeFunction("completeInvitation", { token: inviteToken });
           } catch (e) {
             console.error("Failed to complete invitation:", e);
           }

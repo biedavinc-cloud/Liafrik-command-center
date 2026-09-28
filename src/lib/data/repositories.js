@@ -2,31 +2,32 @@
 // All business entities now read/write directly to Neon PostgreSQL via the
 // `neonData` backend function. The User entity stays on Base44 because it is
 // the built-in auth entity managed by the platform's auth system.
+import { invokeFunction } from '@/lib/api';
 import { base44 } from '@/api/base44Client';
 
 const neonRepo = (name) => ({
   list: (sort = '-created_date', limit = 500) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'list', sort, limit }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'list', sort, limit }).then(r => r.data),
   filter: (query, sort = '-created_date', limit = 500) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'filter', query, sort, limit }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'filter', query, sort, limit }).then(r => r.data),
   get: (id) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'get', id }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'get', id }).then(r => r.data),
   create: (data) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'create', data }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'create', data }).then(r => r.data),
   bulkCreate: (rows) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'bulkCreate', rows }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'bulkCreate', rows }).then(r => r.data),
   update: (id, data) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'update', id, data }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'update', id, data }).then(r => r.data),
   bulkUpdate: (rows) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'bulkUpdate', rows }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'bulkUpdate', rows }).then(r => r.data),
   updateMany: (query, update) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'updateMany', query, update }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'updateMany', query, update }).then(r => r.data),
   remove: (id) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'delete', id }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'delete', id }).then(r => r.data),
   deleteMany: (query) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'deleteMany', query }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'deleteMany', query }).then(r => r.data),
   count: (query = {}) =>
-    base44.functions.invoke('neonData', { entity: name, operation: 'count', query }).then(r => r.data),
+    invokeFunction('neonData', { entity: name, operation: 'count', query }).then(r => r.data),
 });
 
 // User is the built-in Base44 auth entity — keep on platform storage
@@ -69,13 +70,13 @@ export const Users = base44Repo('User');
 export const CurrencyRates = neonRepo('CurrencyRate');
 export const StaffProfiles = neonRepo('StaffProfile');
 export const Branding = {
-  get: () => base44.functions.invoke('manageBranding', { operation: 'get' }).then(r => r.data),
-  set: (data) => base44.functions.invoke('manageBranding', { operation: 'set', ...data }).then(r => r.data),
+  get: () => invokeFunction('manageBranding', { operation: 'get' }).then(r => r.data),
+  set: (data) => invokeFunction('manageBranding', { operation: 'set', ...data }).then(r => r.data),
 };
-export const syncRates = (base) => base44.functions.invoke('syncExchangeRates', { base }).then(r => r.data);
+export const syncRates = (base) => invokeFunction('syncExchangeRates', { base }).then(r => r.data);
 export const MyProfile = {
-  get: () => base44.functions.invoke('manageProfile', { operation: 'get' }).then(r => r.data),
-  set: (data) => base44.functions.invoke('manageProfile', { operation: 'set', ...data }).then(r => r.data),
+  get: () => invokeFunction('manageProfile', { operation: 'get' }).then(r => r.data),
+  set: (data) => invokeFunction('manageProfile', { operation: 'set', ...data }).then(r => r.data),
 };
 export const PaymentProviders = neonRepo('PaymentProvider');
 export const PaymentLinks = neonRepo('PaymentLink');
@@ -85,11 +86,11 @@ export const Conversations = neonRepo('Conversation');
 export const OutboundMessages = neonRepo('OutboundMessage');
 export const CommunicationChannels = neonRepo('CommunicationChannel');
 export const PSP = {
-  list: () => base44.functions.invoke('managePsp', { operation: 'list' }).then(r => r.data),
-  connect: (data) => base44.functions.invoke('managePsp', { operation: 'connect', ...data }).then(r => r.data),
-  disconnect: (data) => base44.functions.invoke('managePsp', { operation: 'disconnect', ...data }).then(r => r.data),
-  toggle: (data) => base44.functions.invoke('managePsp', { operation: 'toggle', ...data }).then(r => r.data),
-  test: (data) => base44.functions.invoke('managePsp', { operation: 'test', ...data }).then(r => r.data),
-  configure: (data) => base44.functions.invoke('managePsp', { operation: 'configure', ...data }).then(r => r.data),
+  list: () => invokeFunction('managePsp', { operation: 'list' }).then(r => r.data),
+  connect: (data) => invokeFunction('managePsp', { operation: 'connect', ...data }).then(r => r.data),
+  disconnect: (data) => invokeFunction('managePsp', { operation: 'disconnect', ...data }).then(r => r.data),
+  toggle: (data) => invokeFunction('managePsp', { operation: 'toggle', ...data }).then(r => r.data),
+  test: (data) => invokeFunction('managePsp', { operation: 'test', ...data }).then(r => r.data),
+  configure: (data) => invokeFunction('managePsp', { operation: 'configure', ...data }).then(r => r.data),
 };
-export const createPaymentLink = (data) => base44.functions.invoke('createPaymentLink', data).then(r => r.data);
+export const createPaymentLink = (data) => invokeFunction('createPaymentLink', data).then(r => r.data);

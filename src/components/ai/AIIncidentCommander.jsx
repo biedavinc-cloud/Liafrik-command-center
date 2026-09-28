@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -27,7 +28,7 @@ export default function AIIncidentCommander() {
     setError(null);
     setResult(null);
     try {
-      const res = await base44.functions.invoke('aiIncident', { incidentId: selectedId });
+      const res = await invokeFunction('aiIncident', { incidentId: selectedId });
       setResult(res.data);
       if (res.data?.error) setError(res.data.error);
     } catch (err) {

@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
 import { Loader2, Plus, X, Mail, ShieldCheck } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -74,7 +75,7 @@ export default function AdminDialog({ open, onOpenChange, admin, apps, admins })
       // New admin — send invitation via backend function
       setInviting(true);
       try {
-        const res = await base44.functions.invoke('inviteAdministrator', payload);
+        const res = await invokeFunction('inviteAdministrator', payload);
         if (res.data?.success) {
           toast({ title: t('invite.sent'), description: t('invite.sentBody', { email: form.email }) });
           onOpenChange(false);

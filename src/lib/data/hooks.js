@@ -1,3 +1,4 @@
+import { invokeFunction } from '@/lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import * as R from './repositories';
@@ -126,7 +127,7 @@ export function useCreateConversation() {
 export const useChannelStatus = () => useQuery({
   queryKey: ['channelStatus'],
   queryFn: async () => {
-    const res = await base44.functions.invoke('sendCommunication', { action: 'status' });
+    const res = await invokeFunction('sendCommunication', { action: 'status' });
     return res.data;
   },
   ...opts,
@@ -135,7 +136,7 @@ export function useSendCommunication() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('sendCommunication', { action: 'send', ...data });
+      const res = await invokeFunction('sendCommunication', { action: 'send', ...data });
       return res.data;
     },
     onSuccess: () => {
@@ -150,7 +151,7 @@ export function useConfigureChannel() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('sendCommunication', { action: 'configure', ...data });
+      const res = await invokeFunction('sendCommunication', { action: 'configure', ...data });
       return res.data;
     },
     onSuccess: () => {
@@ -163,7 +164,7 @@ export function useTestChannel() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('sendCommunication', { action: 'test', ...data });
+      const res = await invokeFunction('sendCommunication', { action: 'test', ...data });
       return res.data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['channelStatus'] }),
@@ -173,7 +174,7 @@ export function useDeleteChannelConfig() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('sendCommunication', { action: 'delete_config', ...data });
+      const res = await invokeFunction('sendCommunication', { action: 'delete_config', ...data });
       return res.data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['channelStatus'] }),
