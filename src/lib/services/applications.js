@@ -22,7 +22,7 @@ export async function registerApplication(config, testResult) {
     status: 'unknown',
     lifecycle: 'active',
     maintenance_mode: 'normal',
-    connection_status: passed ? 'configured' : 'pending',
+    connection_status: passed ? 'connected' : 'pending',
     is_demo: false,
   });
   await Environments.create({
@@ -83,16 +83,26 @@ export async function deleteApplication(app) {
   await recordAudit({ action: 'application.deleted', resource: 'application', resource_id: app.id, application: app, before: pick(app, ['name', 'slug']), risk_level: 'critical' });
 }
 
+function failureReason(result) {
+  if (!result?.api?.reachable) return `API unreachable: ${result?.api?.error || 'connection failed'}`;
+  if (!result?.health?.ok) {
+    return result?.health?.reachable
+      ? `Health check returned HTTP ${result.health.http_status}`
+      : `Health check unreachable: ${result?.health?.error || 'connection failed'}`;
+  }
+  return 'Connection failed';
+}
+
 export async function runConnectionTest(app) {
   const result = await testConnection({ api_url: app.api_url, health_endpoint: app.health_endpoint });
   const ok = !!(result?.api?.reachable && result?.health?.ok);
   const now = new Date().toISOString();
   if (!app.is_demo) {
     await Applications.update(app.id, {
-      connection_status: ok ? 'configured' : 'error',
+      connection_status: ok ? 'connected' : 'error',
       last_successful_connection: ok ? now : app.last_successful_connection,
       last_failed_connection: ok ? app.last_failed_connection : now,
-      last_failed_reason: ok ? undefined : (result?.api?.error || 'Connection failed'),
+      last_failed_reason: ok ? undefined : failureReason(result),
       response_ms: result?.api?.latency_ms,
     });
   }

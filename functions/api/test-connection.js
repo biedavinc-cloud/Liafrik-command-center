@@ -33,7 +33,10 @@ export async function onRequestPost({ request: req, env }) {
     const base = validUrl(api_url || "");
     if (!base) return Response.json({ error: "invalid_url" }, { status: 400 });
     const healthPath = typeof health_endpoint === "string" && health_endpoint.length < 200 ? health_endpoint : "/health";
-    const healthUrl = new URL(healthPath, base.href.endsWith("/") ? base.href : base.href + "/").href;
+    // health_endpoint is relative to api_url's own path (e.g. Supabase functions live under /functions/v1/xxx).
+    // A leading "/" would make new URL() resolve against the origin instead, dropping that path — strip it first.
+    const baseHref = base.href.endsWith("/") ? base.href : base.href + "/";
+    const healthUrl = new URL(healthPath.replace(/^\/+/, ""), baseHref).href;
     const [api, health] = await Promise.all([probe(base.href), probe(healthUrl)]);
     return Response.json({ api, health, tested_at: (/* @__PURE__ */ new Date()).toISOString() });
   } catch (error) {
