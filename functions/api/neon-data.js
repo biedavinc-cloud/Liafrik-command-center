@@ -7,6 +7,8 @@ const WRITE_OPS = new Set(['create', 'bulkCreate', 'update', 'bulkUpdate', 'upda
 // Columns that must never be returned in read responses
 const EXCLUDED_COLUMNS = {
   payment_providers: ['secret_value', 'webhook_secret_value', 'site_id_value'],
+  communication_channels: ['credentials'],
+  invitations: ['token'],
 };
 
 function stripSecrets(table, rows) {

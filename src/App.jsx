@@ -9,6 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
 import AppShell from '@/components/shell/AppShell';
+import ErrorBoundary from '@/components/ErrorBoundary';
 // Add page imports here
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -128,7 +129,9 @@ function App() {
         <I18nProvider>
           <Router>
             <ScrollToTop />
-            <AuthenticatedApp />
+            <ErrorBoundary>
+              <AuthenticatedApp />
+            </ErrorBoundary>
           </Router>
           <Toaster />
         </I18nProvider>

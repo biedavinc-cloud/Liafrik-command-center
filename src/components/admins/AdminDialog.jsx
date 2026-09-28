@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAction } from '@/lib/data/hooks';
 import { saveAdministrator } from '@/lib/services/identity';
@@ -28,6 +29,7 @@ function Pick({ value, onChange, options, labelOf, className }) {
 export default function AdminDialog({ open, onOpenChange, admin, apps, admins }) {
   const { t } = useT();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
   const [inviting, setInviting] = useState(false);
@@ -76,7 +78,13 @@ export default function AdminDialog({ open, onOpenChange, admin, apps, admins })
       try {
         const res = await invokeFunction('inviteAdministrator', payload);
         if (res.data?.success) {
-          toast({ title: t('invite.sent'), description: t('invite.sentBody', { email: form.email }) });
+          queryClient.invalidateQueries({ queryKey: ['administrators'] });
+          if (res.data.email_sent === false && res.data.invite_url) {
+            try { await navigator.clipboard.writeText(res.data.invite_url); } catch { /* clipboard unavailable */ }
+            toast({ title: 'Invitation created — email not sent', description: `Send this link to ${form.email} (copied): ${res.data.invite_url}` });
+          } else {
+            toast({ title: t('invite.sent'), description: t('invite.sentBody', { email: form.email }) });
+          }
           onOpenChange(false);
         } else {
           toast({ title: t('invite.failed'), description: res.data?.error || 'Unknown error', variant: 'destructive' });

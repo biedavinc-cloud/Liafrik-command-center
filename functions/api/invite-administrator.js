@@ -59,8 +59,11 @@ async function onRequestPost({ request: req, env }) {
       risk_level: "medium",
       after: JSON.stringify({ global_role, assignments, permissions, invitation_id: invitation.id })
     });
-    const appUrl = req.headers.get("origin") || "https://control.liafrik.com";
+    const appUrl = req.headers.get("origin") || new URL(req.url).origin;
     const registerUrl = `${appUrl}/register?invite=${token}`;
+    let emailSent = true;
+    let emailError = null;
+    try {
     await platform.asServiceRole.integrations.Core.SendEmail({
       to: email.toLowerCase(),
       subject: "You are invited to Liafrik Command Center",
@@ -78,7 +81,11 @@ If you did not expect this invitation, please ignore this email.
 
 \u2014 Liafrik Command Center`
     });
-    return Response.json({ success: true, invitation_id: invitation.id, administrator_id: admin.id });
+    } catch (e) {
+      emailSent = false;
+      emailError = e.message;
+    }
+    return Response.json({ success: true, invitation_id: invitation.id, administrator_id: admin.id, invite_url: registerUrl, email_sent: emailSent, email_error: emailError });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

@@ -32,7 +32,11 @@ export function I18nProvider({ children }) {
     const fmt = {
       number: (n) => nf.format(n ?? 0),
       compact: (n) => new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(n ?? 0),
-      currency: (n, c = 'AED') => new Intl.NumberFormat(locale, { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n ?? 0),
+      currency: (n, c) => {
+        const code = typeof c === 'string' && /^[A-Za-z]{3}$/.test(c) ? c.toUpperCase() : 'AED';
+        const value = Number.isFinite(Number(n)) ? Number(n) : 0;
+        return new Intl.NumberFormat(locale, { style: 'currency', currency: code, maximumFractionDigits: 0 }).format(value);
+      },
       percent: (n, d = 1) => (n == null ? '—' : `${new Intl.NumberFormat(locale, { maximumFractionDigits: d, minimumFractionDigits: d }).format(n)}%`),
       date: (d) => (d ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(d)) : '—'),
       dateTime: (d) => (d ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(d)) : '—'),
