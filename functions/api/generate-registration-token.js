@@ -1,6 +1,6 @@
 import { createPlatform } from "../_shared/platform.js";
 import { neonRepo } from "../_shared/neonRepo.js";
-async function generateRegistrationToken_default(req) {
+export async function onRequestPost({ request: req, env }) {
   try {
     const platform = createPlatform(req, env);
     const user = await platform.auth.me();
@@ -39,6 +39,3 @@ async function generateRegistrationToken_default(req) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
-export {
-  generateRegistrationToken_default as default
-};

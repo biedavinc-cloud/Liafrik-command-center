@@ -81,7 +81,7 @@ export default function DatabaseInspector() {
 
   React.useEffect(() => { fetchCounts(); }, []);
 
-  const totalRows = tableCounts ? Object.values(counts).reduce((s, v) => s + (typeof v === 'number' ? v : 0), 0) : 0;
+  const totalRows = tableCounts ? Object.values(tableCounts).reduce((s, v) => s + (typeof v === 'number' ? v : 0), 0) : 0;
 
   return (
     <div className="space-y-5">
