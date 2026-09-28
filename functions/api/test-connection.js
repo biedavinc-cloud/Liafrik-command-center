@@ -23,7 +23,7 @@ async function probe(url) {
     clearTimeout(timer);
   }
 }
-async function testConnection_default(req) {
+export async function onRequestPost({ request: req, env }) {
   try {
     const platform = createPlatform(req, env);
     const user = await platform.auth.me();
@@ -40,6 +40,3 @@ async function testConnection_default(req) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
-export {
-  testConnection_default as default
-};
