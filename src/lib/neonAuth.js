@@ -76,7 +76,7 @@ export async function signOut() {
 }
 
 export const requestPasswordReset = (email) =>
-  request('/forget-password', { body: { email, redirectTo: `${window.location.origin}/reset-password` } });
+  request('/request-password-reset', { body: { email, redirectTo: `${window.location.origin}/reset-password` } });
 
 export const resetPassword = (newPassword, token) =>
   request('/reset-password', { body: { newPassword, token } });
