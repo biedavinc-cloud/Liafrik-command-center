@@ -34,7 +34,7 @@ Secure Backend / API
         ↓
 Neon PostgreSQL
 
-There must be no Base44 database mirror, mock database or parallel source of truth.
+There is no database mirror, mock database or parallel source of truth.
 
 All production data, migrations, schemas, indexes, constraints and persistent application state must be managed through the production backend and Neon.
 
@@ -316,7 +316,7 @@ Neon production database is connected
 
 Neon is the authoritative source of truth
 
-No Base44 database dependency remains
+No third-party app-platform dependency remains
 
 Authentication is private and invite-only
 

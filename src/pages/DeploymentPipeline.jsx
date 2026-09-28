@@ -3,7 +3,6 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useApplications, useDeployments, useAction } from '@/lib/data/hooks';
-import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/kit/PageHeader';
 import MetricCard from '@/components/kit/MetricCard';
 import Panel from '@/components/kit/Panel';

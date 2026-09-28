@@ -56,9 +56,9 @@ Provider Infrastructure (Neon, GitHub, Cloudflare)
 - Connector operations return "unsupported" for unconnected apps
 
 ### Connected
-- Base44 authentication (email/password, Google OAuth)
-- Base44 database (all entities)
-- Base44 backend functions (testConnection, generateRegistrationToken)
+- Neon Auth (Better Auth, email/password, invite-only)
+- Neon PostgreSQL (all entities)
+- Cloudflare Pages Functions (`functions/api/`)
 
 ### Not Connected (Honestly Labeled)
 - **Neon PostgreSQL**: `not_connected` — architecture prepared
@@ -118,7 +118,7 @@ Provider Infrastructure (Neon, GitHub, Cloudflare)
 
 ## Authentication Architecture
 
-### Current (Base44)
+### Current (Neon + Cloudflare)
 - Email/password with OTP verification
 - Google OAuth
 - Session-based with token management
@@ -176,15 +176,15 @@ A single operation is traceable across:
 | Database | `DatabaseProvider` | Neon prepared, not connected |
 | Repository | `RepositoryProvider` | GitHub prepared, not connected |
 | Edge/CDN | `EdgeProvider` | Cloudflare prepared, not connected |
-| Authentication | `AuthProvider` | Base44 active, SSO prepared |
+| Authentication | `AuthProvider` | Neon Auth active, SSO prepared |
 | Email | `EmailProvider` | Not connected |
-| Storage | `StorageProvider` | Base44 active |
+| Storage | `StorageProvider` | Neon active |
 | Payments | `PaymentProvider` | Not connected |
 | Monitoring | `MonitoringProvider` | Architecture ready |
 
 ## Migration Readiness
 
-The application is structured for future migration from Base44 to:
+The application runs on Neon + Cloudflare and can be extended with:
 ```
 GitHub (code) + Neon (database) + Cloudflare (hosting/CDN)
 ```
@@ -195,13 +195,13 @@ GitHub (code) + Neon (database) + Cloudflare (hosting/CDN)
 - **Data Access**: `src/lib/data/repositories.js` — single swap point for database
 - **Protocol**: `src/lib/protocol/` — LCP spec, connector interface, event types
 - **SDK**: `src/lib/sdk/` — conceptual @liafrik/control-sdk modules
-- **Backend**: `base44/functions/` — server-side operations
+- **Backend**: `functions/api/` — server-side operations
 
-Swapping Base44 for Neon means re-implementing `repositories.js` only.
+Data access is isolated in `repositories.js`.
 
 ## Security Checklist
 
-- ✅ Authentication protected (Base44 auth)
+- ✅ Authentication protected (Neon Auth)
 - ✅ Authorization enforced (RBAC + admin checks in backend functions)
 - ✅ Application isolation (every query scoped by application_id)
 - ✅ Environment isolation (every query scoped by environment)

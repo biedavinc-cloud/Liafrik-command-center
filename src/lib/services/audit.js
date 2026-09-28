@@ -1,12 +1,12 @@
 // Audit service. Every administrative mutation passes through recordAudit.
 // In the target architecture this moves server-side (the LCP gateway writes audit events).
-import { base44 } from '@/api/base44Client';
+import { getUser } from '@/lib/neonAuth';
 import { AuditEvents } from '@/lib/data/repositories';
 import { roleOfUser } from '@/lib/rbac';
 import { generateCorrelationId } from '@/lib/protocol/actions';
 
 let cachedUser = null;
-const currentUser = async () => (cachedUser ||= await base44.auth.me());
+const currentUser = async () => (cachedUser ||= await getUser());
 
 export async function recordAudit({ action, resource, resource_id, application, environment, outcome = 'success', before, after, risk_level = 'low', correlation_id }) {
   const user = await currentUser();

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAuth } from '@/lib/AuthContext';
 import { useMyProfile, useSetMyProfile } from '@/lib/data/hooks';
-import { base44 } from '@/api/base44Client';
+import { fileToDataUrl } from '@/lib/imageUpload';
+import { updateUser } from '@/lib/neonAuth';
 import Panel from '@/components/kit/Panel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +37,7 @@ export default function ProfilePanel() {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
+      const file_url = await fileToDataUrl(file);
       setForm(f => ({ ...f, photo_url: file_url }));
     } catch (e) {
       toast({ title: 'Upload failed', description: e.message, variant: 'destructive' });
@@ -47,9 +48,9 @@ export default function ProfilePanel() {
 
   const handleSave = async () => {
     try {
-      // Update full name on the Base44 User entity
+      // Update full name on the auth user
       if (fullName && fullName !== user?.full_name) {
-        await base44.auth.updateMe({ full_name: fullName });
+        await updateUser({ name: fullName });
       }
       // Update staff profile
       await setProfile.mutateAsync({

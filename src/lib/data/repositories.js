@@ -1,9 +1,7 @@
 // Data-access layer. The only module that talks to the storage backend.
 // All business entities now read/write directly to Neon PostgreSQL via the
-// `neonData` backend function. The User entity stays on Base44 because it is
-// the built-in auth entity managed by the platform's auth system.
+// `neonData` backend function (Cloudflare Pages Function).
 import { invokeFunction } from '@/lib/api';
-import { base44 } from '@/api/base44Client';
 
 const neonRepo = (name) => ({
   list: (sort = '-created_date', limit = 500) =>
@@ -30,20 +28,6 @@ const neonRepo = (name) => ({
     invokeFunction('neonData', { entity: name, operation: 'count', query }).then(r => r.data),
 });
 
-// User is the built-in Base44 auth entity — keep on platform storage
-const base44Repo = (name) => ({
-  list: (sort = '-created_date', limit = 500) => base44.entities[name].list(sort, limit),
-  filter: (query, sort = '-created_date', limit = 500) => base44.entities[name].filter(query, sort, limit),
-  get: (id) => base44.entities[name].get(id),
-  create: (data) => base44.entities[name].create(data),
-  bulkCreate: (rows) => base44.entities[name].bulkCreate(rows),
-  update: (id, data) => base44.entities[name].update(id, data),
-  bulkUpdate: (rows) => base44.entities[name].bulkUpdate(rows),
-  updateMany: (query, update) => base44.entities[name].updateMany(query, update),
-  remove: (id) => base44.entities[name].delete(id),
-  deleteMany: (query) => base44.entities[name].deleteMany(query),
-});
-
 export const Applications = neonRepo('Application');
 export const Environments = neonRepo('ApplicationEnvironment');
 export const Deployments = neonRepo('Deployment');
@@ -66,7 +50,6 @@ export const SystemStates = neonRepo('SystemState');
 export const AppConfigs = neonRepo('AppConfig');
 export const AutomationRules = neonRepo('AutomationRule');
 export const Invitations = neonRepo('Invitation');
-export const Users = base44Repo('User');
 export const CurrencyRates = neonRepo('CurrencyRate');
 export const StaffProfiles = neonRepo('StaffProfile');
 export const Branding = {

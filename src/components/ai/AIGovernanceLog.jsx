@@ -2,7 +2,6 @@ import { invokeFunction } from '@/lib/api';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ScrollText, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { useT } from '@/lib/i18n/I18nProvider';
 import EmptyState from '@/components/kit/EmptyState';
 

@@ -20,11 +20,21 @@ export async function getUser(request, env) {
     if (!payload.sub) return null;
     const sql = createSql(env);
     const rows = await sql(
-      'SELECT id, email, role FROM neon_auth."user" WHERE id = $1 AND COALESCE(banned, false) = false',
+      'SELECT id, email, name, role FROM neon_auth."user" WHERE id = $1 AND COALESCE(banned, false) = false',
       [payload.sub]
     );
     if (!rows[0]) return null;
-    return { id: rows[0].id, email: rows[0].email, role: rows[0].role || 'user' };
+    const u = rows[0];
+    const role = u.role || 'user';
+    // Invite-only: anyone can sign up on Neon Auth, so non-admins must be a registered administrator.
+    if (role !== 'admin') {
+      const a = await sql(
+        "SELECT 1 FROM administrators WHERE lower(email) = lower($1) AND status IN ('active','pending') LIMIT 1",
+        [u.email]
+      );
+      if (!a[0]) return null;
+    }
+    return { id: u.id, email: u.email, full_name: u.name, role };
   } catch (e) {
     return null;
   }

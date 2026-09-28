@@ -1,7 +1,6 @@
 import { invokeFunction } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, Loader2, Cpu } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { cn } from '@/lib/utils';
 

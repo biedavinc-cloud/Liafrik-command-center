@@ -1,9 +1,6 @@
 import React from "react";
 import { useT } from "@/lib/i18n/I18nProvider";
 
-const AUTH_BG =
-  "https://media.base44.com/images/public/6ab785600215c73ef9a23ea9/26adbfa20_mohamed_hassan-vpn-4046047_1920.jpg";
-
 export default function AuthLayout({ icon: _icon, title, subtitle, footer, children }) {
   const { t } = useT();
   return (
@@ -12,7 +9,7 @@ export default function AuthLayout({ icon: _icon, title, subtitle, footer, child
       <div className="relative h-28 shrink-0 overflow-hidden lg:h-auto lg:w-[46%]">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${AUTH_BG})` }}
+          style={{ backgroundImage: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0e7490 100%)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950/85 via-slate-900/75 to-slate-950/90" />
         <div className="relative z-10 flex h-full items-center justify-center px-6 lg:block lg:p-14">

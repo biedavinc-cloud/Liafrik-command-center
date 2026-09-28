@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import en from './en';
 import fr from './fr';
 
@@ -11,9 +10,6 @@ const resolve = (dict, key) => key.split('.').reduce((o, k) => (o == null ? unde
 export function I18nProvider({ children }) {
   const [lang, setLangState] = useState(() => localStorage.getItem('lcc.lang') || 'en');
 
-  useEffect(() => {
-    base44.auth.me().then((u) => u?.language && DICTS[u.language] && setLangState(u.language), () => {});
-  }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -22,7 +18,6 @@ export function I18nProvider({ children }) {
 
   const setLang = useCallback((l) => {
     setLangState(l);
-    base44.auth.updateMe({ language: l });
   }, []);
 
   const value = useMemo(() => {

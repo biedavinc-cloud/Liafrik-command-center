@@ -2,7 +2,6 @@
 // All remote calls are routed server-side — the browser never talks to an app's API with credentials.
 // A future @liafrik/control-sdk implements the app side of these modules.
 import { invokeFunction } from '@/lib/api';
-import { base44 } from '@/api/base44Client';
 import { capabilityMap } from './capabilities';
 
 export const LCP_VERSION = 'v1';

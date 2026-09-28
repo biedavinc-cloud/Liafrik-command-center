@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useBranding, useSetBranding } from '@/lib/data/hooks';
-import { base44 } from '@/api/base44Client';
+import { fileToDataUrl } from '@/lib/imageUpload';
 import Panel from '@/components/kit/Panel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,7 @@ export default function BrandingPanel() {
     if (!file) return;
     setUploading(field);
     try {
-      const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
+      const file_url = await fileToDataUrl(file, 512);
       setForm(f => ({ ...f, [field]: file_url }));
     } catch (e) {
       toast({ title: 'Upload failed', description: e.message, variant: 'destructive' });
