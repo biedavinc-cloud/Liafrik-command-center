@@ -113,6 +113,19 @@ export default function PspConfigDialog({ psp, open, onOpenChange }) {
             {psp.webhook_secret_env && <p className="text-[10px] text-muted-foreground">Env var: {psp.webhook_secret_env}</p>}
           </div>
 
+          {['stripe', 'paystack'].includes(psp.key) ? (
+            <div className="space-y-1 rounded-md border border-border bg-muted/30 p-2">
+              <Label className="text-[11px] font-medium">Webhook URL</Label>
+              <p className="text-[10px] text-muted-foreground">
+                Register this URL in your {psp.display_name} dashboard so payments are marked as paid automatically
+                {psp.key === 'stripe' ? ' (use the signing secret it gives you as the Webhook Secret above).' : ' (Paystack signs with your API key, so no separate secret is needed above).'}
+              </p>
+              <code className="block break-all rounded bg-background px-1.5 py-1 text-[10px]">{`${window.location.origin}/api/psp-webhook/${psp.key}`}</code>
+            </div>
+          ) : (
+            <p className="text-[10px] text-muted-foreground">Automatic payment confirmation isn't available yet for {psp.display_name} — payment links won't switch to "Paid" on their own.</p>
+          )}
+
           {psp.credential_hint && (
             <div className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] text-amber-800">
               Current key: {psp.credential_hint}. Enter a new key to replace it.

@@ -1,6 +1,6 @@
 import { createPlatform } from "../_shared/platform.js";
 import { neonRepo } from "../_shared/neonRepo.js";
-import { PSP_PROVIDERS, isPSPSecretSet, getSecretHint, makeHint } from "../_shared/pspGateway.js";
+import { PSP_PROVIDERS, isPSPSecretSet, getSecretHint, makeHint, verifyPSPCredentials } from "../_shared/pspGateway.js";
 async function onRequestPost({ request: req, env }) {
   try {
     const platform = createPlatform(req, env);
@@ -93,6 +93,9 @@ async function onRequestPost({ request: req, env }) {
       if (!isPSPSecretSet(provider) && !dbSecretSet) return Response.json({
         error: `Secret ${def.secret_key_env} is not configured. Configure it in the PSP Center, then connect.`
       }, { status: 400 });
+      const secretKey = dbSecret || (isPSPSecretSet(provider) ? env[def.secret_key_env] : null);
+      const verification = secretKey ? await verifyPSPCredentials(provider, secretKey) : { verified: null };
+      if (verification.verified === false) return Response.json({ error: verification.error }, { status: 400 });
       const hint = dbSecret ? makeHint(dbSecret) : getSecretHint(provider);
       let result;
       if (existing[0]) {
@@ -161,18 +164,25 @@ async function onRequestPost({ request: req, env }) {
       const def = PSP_PROVIDERS[provider];
       if (!def) return Response.json({ error: "Unknown provider" }, { status: 400 });
       const existing = await repo.filter({ provider });
-      const dbSecretSet = !!existing[0]?.secret_value;
+      const dbSecret = existing[0]?.secret_value;
+      const dbSecretSet = !!dbSecret;
       const secretSet = isPSPSecretSet(provider) || dbSecretSet;
-      const result = {
-        provider,
-        secret_configured: secretSet,
-        status: secretSet ? "passed" : "failed",
-        message: secretSet ? "API key is configured" : `Secret ${def.secret_key_env} is not set`
-      };
+      let result;
+      if (!secretSet) {
+        result = { provider, secret_configured: false, status: "failed", message: `Secret ${def.secret_key_env} is not set` };
+      } else {
+        const secretKey = dbSecret || env[def.secret_key_env];
+        const verification = await verifyPSPCredentials(provider, secretKey);
+        result = verification.verified === false
+          ? { provider, secret_configured: true, status: "failed", message: verification.error }
+          : verification.verified === true
+            ? { provider, secret_configured: true, status: "passed", message: "Credentials verified with the provider" }
+            : { provider, secret_configured: true, status: "passed", message: "API key is configured (no live verification endpoint for this provider)" };
+      }
       if (existing[0]) {
         await repo.update(existing[0].id, {
           last_tested: (/* @__PURE__ */ new Date()).toISOString(),
-          last_test_result: secretSet ? "passed" : "failed"
+          last_test_result: result.status
         });
       }
       return Response.json(result);

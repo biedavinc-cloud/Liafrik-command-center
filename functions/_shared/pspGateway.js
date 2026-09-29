@@ -282,6 +282,30 @@ async function createCinetPayLink(secretKey, p, siteIdOverride) {
   }
   return { link_url: data.data.payment_url, provider_reference: data.data.trans_id || p.reference };
 }
+// Verifies credentials with a real, read-only call to the provider — not just "is a value present".
+// Korapay and CinetPay don't have a documented read-only endpoint usable here, so for those two
+// this still only confirms a key is configured; connect()/test() label the result accordingly.
+async function verifyPSPCredentials(providerKey, secretKey) {
+  if (providerKey === "stripe") {
+    const res = await fetch("https://api.stripe.com/v1/balance", { headers: { Authorization: `Bearer ${secretKey}` } });
+    if (res.ok) return { verified: true };
+    const err = await res.json().catch(() => ({}));
+    return { verified: false, error: err?.error?.message || `Stripe rejected this key (HTTP ${res.status})` };
+  }
+  if (providerKey === "paystack") {
+    const res = await fetch("https://api.paystack.co/balance", { headers: { Authorization: `Bearer ${secretKey}` } });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.status !== false) return { verified: true };
+    return { verified: false, error: data?.message || `Paystack rejected this key (HTTP ${res.status})` };
+  }
+  if (providerKey === "flutterwave") {
+    const res = await fetch("https://api.flutterwave.com/v3/balances", { headers: { Authorization: `Bearer ${secretKey}` } });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.status === "success") return { verified: true };
+    return { verified: false, error: data?.message || `Flutterwave rejected this key (HTTP ${res.status})` };
+  }
+  return { verified: null };
+}
 export {
   PSP_PROVIDERS,
   createPaymentLink,
@@ -289,5 +313,6 @@ export {
   getPSPSecretFromDB,
   getSecretHint,
   isPSPSecretSet,
-  makeHint
+  makeHint,
+  verifyPSPCredentials
 };

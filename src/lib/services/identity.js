@@ -1,6 +1,14 @@
 // Identity & access services: administrators, roles, notifications.
 import { Administrators, Roles, Notifications } from '@/lib/data/repositories';
 import { recordAudit } from './audit';
+import { invokeFunction } from '@/lib/api';
+
+// Actually revokes the administrator's live sessions (not just an audit log entry).
+export async function resetAdministratorAccess(admin) {
+  const res = await invokeFunction('resetAccess', { email: admin.email });
+  if (!res.data?.success) throw new Error(res.data?.error || 'Failed to reset access');
+  return res.data;
+}
 
 export async function saveAdministrator(data, existing) {
   if (existing) {

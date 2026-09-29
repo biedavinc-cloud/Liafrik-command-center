@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAction } from '@/lib/data/hooks';
-import { setAdministratorStatus } from '@/lib/services/identity';
-import { recordAudit } from '@/lib/services/audit';
+import { setAdministratorStatus, resetAdministratorAccess } from '@/lib/services/identity';
 import { useCan } from '@/lib/rbac';
 import ConfirmDialog from '@/components/kit/ConfirmDialog';
 
@@ -16,7 +15,7 @@ export default function AdminRowMenu({ admin, onEdit, onView }) {
   const can = useCan();
   const [confirm, setConfirm] = useState(null);
   const status = useAction((s) => setAdministratorStatus(admin, s), ['administrators']);
-  const reset = useAction(() => recordAudit({ action: 'administrator.access_reset', resource: 'administrator', resource_id: admin.email }));
+  const reset = useAction(() => resetAdministratorAccess(admin));
   const ok = can('admins.suspend');
   const item = 'gap-2 text-[12.5px]';
 
