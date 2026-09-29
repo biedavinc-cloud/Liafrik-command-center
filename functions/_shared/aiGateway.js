@@ -11,7 +11,7 @@ class GeminiProvider {
     const rawModel = secrets.get("GEMINI_MODEL") || "gemini-2.0-flash";
     const normalized = rawModel.toLowerCase().replace(/\s+/g, "-");
     const model = normalized.startsWith("gemini-") ? normalized : `gemini-${normalized}`;
-    const fallbackModel = "gemini-3.8-flash";
+    const fallbackModel = "gemini-2.0-flash";
     const timeoutMs = opts.timeoutMs ?? 45e3;
     const body = {
       contents: [{ role: "user", parts: [{ text: prompt }] }],

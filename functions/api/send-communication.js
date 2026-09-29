@@ -14,7 +14,11 @@ const CHANNEL_DEFS = [
     type: "email",
     auth: "secret",
     description: "Developer-friendly transactional email via Resend API",
-    fields: [{ key: "api_key", label: "API Key", type: "password", required: true }]
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", required: true },
+      { key: "from_email", label: "From Email", type: "text", required: true },
+      { key: "from_name", label: "From Name", type: "text", required: false }
+    ]
   },
   {
     key: "gmail",
@@ -243,10 +247,14 @@ async function onRequestPost({ request: req, env }) {
         } else if (channel === "resend") {
           const apiKey = await getCredential(platform, "resend", "api_key");
           if (!apiKey) throw new Error("Resend API key not configured");
+          const resendConfig = await getChannelConfig(platform, "resend");
+          const fromEmail = resendConfig?.credentials?.from_email;
+          if (!fromEmail) throw new Error("Resend \u2014 set a From Email in the channel configuration");
+          const fromName = resendConfig?.credentials?.from_name || "Liafrik";
           const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ from: "Liafrik <noreply@resend.dev>", to: user.email, subject: "Liafrik Test", text: "Test from Liafrik Communication Center." })
+            body: JSON.stringify({ from: `${fromName} <${fromEmail}>`, to: user.email, subject: "Liafrik Test", text: "Test from Liafrik Communication Center." })
           });
           if (!res.ok) {
             const d = await res.json();
@@ -332,10 +340,14 @@ async function onRequestPost({ request: req, env }) {
         } else if (channel === "resend") {
           const apiKey = await getCredential(platform, "resend", "api_key");
           if (!apiKey) throw new Error("Resend not configured. Configure it in the Communication Center.");
+          const resendConfig = await getChannelConfig(platform, "resend");
+          const fromEmail = resendConfig?.credentials?.from_email;
+          if (!fromEmail) throw new Error("Resend \u2014 set a From Email in the channel configuration");
+          const fromName = resendConfig?.credentials?.from_name || "Liafrik";
           const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ from: "Liafrik <noreply@resend.dev>", to: recipient, subject: subject || "Message from Liafrik", text })
+            body: JSON.stringify({ from: `${fromName} <${fromEmail}>`, to: recipient, subject: subject || "Message from Liafrik", text })
           });
           const d = await res.json();
           if (!res.ok) throw new Error(d.message || "Resend API error");

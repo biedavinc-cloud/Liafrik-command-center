@@ -53,6 +53,7 @@ export const JSONB_COLUMNS = {
   messages: ['attachments', 'mentions', 'read_by'],
   conversations: ['participants'],
   communication_channels: ['credentials', 'credential_hints'],
+  api_keys: ['scopes'],
 };
 
 // Column names come from the client: only allow plain identifiers (prevents SQL injection).
