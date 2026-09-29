@@ -24,8 +24,7 @@ const TRIGGERS = [
 ];
 
 const ACTIONS = [
-  { value: 'notify_email', label: 'Send email notification', icon: Bell },
-  { value: 'notify_inapp', label: 'Create in-app notification', icon: Bell },
+  { value: 'send_notification', label: 'Create in-app notification', icon: Bell },
   { value: 'call_webhook', label: 'Call webhook', icon: Webhook },
   { value: 'create_incident', label: 'Create incident', icon: ShieldAlert },
 ];
@@ -35,7 +34,7 @@ export default function AutomationEngine() {
   const { data: rules = [], isLoading } = useAutomationRules();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: '', description: '', trigger: '', action: '', action_config: '', enabled: true });
+  const [form, setForm] = useState({ name: '', description: '', trigger_event: '', action_type: '', action_config: '', enabled: true });
 
   const saveRule = useAction(async (data) => {
     if (editing) {
@@ -55,16 +54,16 @@ export default function AutomationEngine() {
   const openForm = (rule = null) => {
     if (rule) {
       setEditing(rule);
-      setForm({ name: rule.name, description: rule.description || '', trigger: rule.trigger || '', action: rule.action || '', action_config: rule.action_config || '', enabled: rule.enabled ?? true });
+      setForm({ name: rule.name, description: rule.description || '', trigger_event: rule.trigger_event || '', action_type: rule.action_type || '', action_config: rule.action_config || '', enabled: rule.enabled ?? true });
     } else {
       setEditing(null);
-      setForm({ name: '', description: '', trigger: '', action: '', action_config: '', enabled: true });
+      setForm({ name: '', description: '', trigger_event: '', action_type: '', action_config: '', enabled: true });
     }
     setShowForm(true);
   };
 
   const handleSubmit = () => {
-    if (!form.name.trim() || !form.trigger || !form.action) return;
+    if (!form.name.trim() || !form.trigger_event || !form.action_type) return;
     saveRule.mutate(form, { onSuccess: () => setShowForm(false) });
   };
 
@@ -100,8 +99,8 @@ export default function AutomationEngine() {
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
           {rules.map((rule) => {
-            const trigger = TRIGGERS.find((t) => t.value === rule.trigger);
-            const action = ACTIONS.find((a) => a.value === rule.action);
+            const trigger = TRIGGERS.find((t) => t.value === rule.trigger_event);
+            const action = ACTIONS.find((a) => a.value === rule.action_type);
             const TriggerIcon = trigger?.icon || Activity;
             const ActionIcon = action?.icon || Bell;
             return (
@@ -122,10 +121,10 @@ export default function AutomationEngine() {
                 </div>
                 <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
                   <TriggerIcon className={cn('h-3.5 w-3.5', trigger?.color || 'text-muted-foreground')} />
-                  <span className="text-[11.5px] font-medium">{trigger?.label || rule.trigger}</span>
+                  <span className="text-[11.5px] font-medium">{trigger?.label || rule.trigger_event}</span>
                   <ArrowRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
                   <ActionIcon className="h-3.5 w-3.5 text-blue-500" />
-                  <span className="text-[11.5px] font-medium">{action?.label || rule.action}</span>
+                  <span className="text-[11.5px] font-medium">{action?.label || rule.action_type}</span>
                 </div>
               </div>
             );
@@ -141,13 +140,13 @@ export default function AutomationEngine() {
               <div><label className="mb-1 block text-[11px] font-medium">Rule Name</label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Alert on app downtime" /></div>
               <div><label className="mb-1 block text-[11px] font-medium">Description</label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What does this rule do?" rows={2} /></div>
               <div><label className="mb-1 block text-[11px] font-medium">Trigger (When)</label>
-                <Select value={form.trigger} onValueChange={(v) => setForm({ ...form, trigger: v })}>
+                <Select value={form.trigger_event} onValueChange={(v) => setForm({ ...form, trigger_event: v })}>
                   <SelectTrigger><SelectValue placeholder="Select a trigger..." /></SelectTrigger>
                   <SelectContent>{TRIGGERS.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div><label className="mb-1 block text-[11px] font-medium">Action (Then)</label>
-                <Select value={form.action} onValueChange={(v) => setForm({ ...form, action: v })}>
+                <Select value={form.action_type} onValueChange={(v) => setForm({ ...form, action_type: v })}>
                   <SelectTrigger><SelectValue placeholder="Select an action..." /></SelectTrigger>
                   <SelectContent>{ACTIONS.map((a) => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}</SelectContent>
                 </Select>
@@ -160,7 +159,7 @@ export default function AutomationEngine() {
             </div>
             <div className="mt-4 flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
-              <Button size="sm" onClick={handleSubmit} disabled={!form.name.trim() || !form.trigger || !form.action || saveRule.isPending}>{editing ? 'Update' : 'Create'}</Button>
+              <Button size="sm" onClick={handleSubmit} disabled={!form.name.trim() || !form.trigger_event || !form.action_type || saveRule.isPending}>{editing ? 'Update' : 'Create'}</Button>
             </div>
           </div>
         </div>

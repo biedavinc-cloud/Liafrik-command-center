@@ -2,6 +2,7 @@
 import { Incidents } from '@/lib/data/repositories';
 import { recordAudit } from './audit';
 import { generateCorrelationId } from '@/lib/protocol/actions';
+import { emit } from './eventBus';
 
 export async function createIncident(app, { title, description, severity, environment, affected_services }) {
   const cid = generateCorrelationId();
@@ -27,6 +28,11 @@ export async function createIncident(app, { title, description, severity, enviro
     risk_level: severity === 'critical' || severity === 'high' ? 'high' : 'medium',
     correlation_id: cid,
   });
+  // Let any matching automation rule react (notify, page someone, open a webhook, etc).
+  emit('incident.created', {
+    application_id: app.id, application_name: app.name, message: title,
+    environment: environment || app.environment, correlation_id: cid, is_demo: app.is_demo || false,
+  }).catch(() => {});
   return incident;
 }
 

@@ -1,6 +1,7 @@
 // Security service: sessions and security events.
 import { Sessions, SecurityEvents } from '@/lib/data/repositories';
 import { recordAudit } from './audit';
+import { emit } from './eventBus';
 
 export async function revokeSession(session) {
   const updated = await Sessions.update(session.id, { status: 'revoked' });
@@ -29,7 +30,7 @@ export async function revokeAllSessions(userId) {
 }
 
 export async function logSecurityEvent({ type, severity, description, application }) {
-  return SecurityEvents.create({
+  const event = await SecurityEvents.create({
     type,
     severity,
     description,
@@ -37,4 +38,8 @@ export async function logSecurityEvent({ type, severity, description, applicatio
     application_name: application?.name,
     is_demo: false,
   });
+  emit('security.alert', {
+    application_id: application?.id, application_name: application?.name, message: description, severity,
+  }).catch(() => {});
+  return event;
 }

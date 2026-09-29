@@ -3,6 +3,7 @@ import { Applications, Environments, Notifications, ChangeRecords } from '@/lib/
 import { testConnection } from '@/lib/protocol/connector';
 import { checkCompatibility, generateRegistrationTokenHint } from '@/lib/protocol/compatibility';
 import { recordAudit } from './audit';
+import { emit } from './eventBus';
 
 const pick = (o, keys) => Object.fromEntries(keys.map((k) => [k, o[k]]));
 
@@ -114,6 +115,12 @@ export async function runConnectionTest(app) {
     outcome: ok ? 'success' : 'failure',
     risk_level: 'low',
   });
+  if (!ok && !app.is_demo) {
+    emit('application.offline', {
+      application_id: app.id, application_name: app.name, message: failureReason(result),
+      environment: app.environment, is_demo: false,
+    }).catch(() => {});
+  }
   return { ...result, ok };
 }
 
