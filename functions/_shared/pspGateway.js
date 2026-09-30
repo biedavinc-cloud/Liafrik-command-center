@@ -136,6 +136,7 @@ async function getPSPSecretFromDB(providerKey, repo) {
   }
   return { secretKey, siteId };
 }
+const LINK_CREATION_SUPPORTED = /* @__PURE__ */ new Set(["stripe", "paystack", "flutterwave", "korapay", "cinetpay"]);
 async function createPaymentLink(providerKey, params, options) {
   const provider = PSP_PROVIDERS[providerKey];
   if (!provider) throw new Error(`Unknown PSP provider: ${providerKey}`);
@@ -308,6 +309,7 @@ async function verifyPSPCredentials(providerKey, secretKey) {
 }
 export {
   PSP_PROVIDERS,
+  LINK_CREATION_SUPPORTED,
   createPaymentLink,
   getPSPProvider,
   getPSPSecretFromDB,

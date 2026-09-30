@@ -1,6 +1,6 @@
 import { createPlatform } from "../_shared/platform.js";
 import { neonRepo } from "../_shared/neonRepo.js";
-import { PSP_PROVIDERS, isPSPSecretSet, getSecretHint, makeHint, verifyPSPCredentials } from "../_shared/pspGateway.js";
+import { PSP_PROVIDERS, LINK_CREATION_SUPPORTED, isPSPSecretSet, getSecretHint, makeHint, verifyPSPCredentials } from "../_shared/pspGateway.js";
 async function onRequestPost({ request: req, env }) {
   try {
     const platform = createPlatform(req, env);
@@ -32,7 +32,8 @@ async function onRequestPost({ request: req, env }) {
           merchant_id: config?.merchant_id,
           last_tested: config?.last_tested,
           last_test_result: config?.last_test_result,
-          secret_configured: secretSet
+          secret_configured: secretSet,
+          link_creation_supported: LINK_CREATION_SUPPORTED.has(key)
         });
       }
       return Response.json(result);

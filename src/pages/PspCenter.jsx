@@ -90,6 +90,12 @@ export default function PspCenter() {
                   {(psp.capabilities || []).length > 5 && <span className="text-[9.5px] text-muted-foreground">+{psp.capabilities.length - 5} more</span>}
                 </div>
 
+                {!psp.link_creation_supported && (
+                  <div className="mb-3 rounded-md bg-amber-50 border border-amber-200 px-2.5 py-1.5 text-[10.5px] text-amber-800">
+                    Payment link creation isn't implemented for {psp.display_name} yet.
+                  </div>
+                )}
+
                 <div className="mb-3 grid grid-cols-2 gap-2 text-[11px]">
                   <div><span className="text-muted-foreground">{t('psp.currencies')}: </span><span className="font-medium">{(psp.supported_currencies || []).length}</span></div>
                   <div><span className="text-muted-foreground">Countries: </span><span className="font-medium">{(psp.supported_countries || []).length}</span></div>

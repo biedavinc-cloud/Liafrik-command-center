@@ -21,6 +21,8 @@ export default function PaymentLinkDialog({ open, onOpenChange }) {
   const [result, setResult] = useState(null);
 
   const connectedPsps = psps.filter(p => p.status === 'connected' && p.enabled);
+  const availablePsps = connectedPsps.filter(p => p.link_creation_supported);
+  const unsupportedPsps = connectedPsps.filter(p => !p.link_creation_supported);
 
   const handleSubmit = async () => {
     try {
@@ -73,9 +75,16 @@ export default function PaymentLinkDialog({ open, onOpenChange }) {
           </div>
         ) : (
           <div className="space-y-4">
-            {connectedPsps.length === 0 && (
+            {availablePsps.length === 0 && (
               <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-[11.5px] text-amber-800">
-                {t('psp.noConnected', { defaultValue: 'No PSP is connected. Connect a provider in the PSP Center first.' })}
+                {connectedPsps.length === 0
+                  ? t('psp.noConnected', { defaultValue: 'No PSP is connected. Connect a provider in the PSP Center first.' })
+                  : `${connectedPsps.map(p => p.display_name).join(', ')} ${connectedPsps.length > 1 ? 'are' : 'is'} connected, but payment link creation isn't implemented for ${connectedPsps.length > 1 ? 'them' : 'it'} yet. Connect Stripe, Paystack, Flutterwave, Korapay or CinetPay instead.`}
+              </div>
+            )}
+            {availablePsps.length > 0 && unsupportedPsps.length > 0 && (
+              <div className="rounded-md bg-muted/50 p-2 text-[10.5px] text-muted-foreground">
+                {unsupportedPsps.map(p => p.display_name).join(', ')} {unsupportedPsps.length > 1 ? 'are' : 'is'} connected but not available here yet.
               </div>
             )}
             <div className="grid grid-cols-2 gap-3">
@@ -84,7 +93,7 @@ export default function PaymentLinkDialog({ open, onOpenChange }) {
                 <Select value={form.provider} onValueChange={v => setForm(f => ({ ...f, provider: v }))}>
                   <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                   <SelectContent>
-                    {connectedPsps.map(p => <SelectItem key={p.key} value={p.key}>{p.display_name}</SelectItem>)}
+                    {availablePsps.map(p => <SelectItem key={p.key} value={p.key}>{p.display_name}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
