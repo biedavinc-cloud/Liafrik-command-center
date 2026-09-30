@@ -20,11 +20,11 @@ async function onRequestPost({ request: req, env }) {
     const res = await fetch(`${API_BASE}/${base}`);
     if (!res.ok) {
       const errText = await res.text().catch(() => res.statusText);
-      return Response.json({ error: `Exchange rate API ${res.status}: ${errText.slice(0, 200)}` }, { status: 502 });
+      return Response.json({ error: `Exchange rate API ${res.status}: ${errText.slice(0, 200)}` }, { status: 400 });
     }
     const data = await res.json();
     if (data.result !== "success" || !data.rates) {
-      return Response.json({ error: "Exchange rate API returned an error", detail: data }, { status: 502 });
+      return Response.json({ error: "Exchange rate API returned an error", detail: data }, { status: 400 });
     }
     const record = await repo.create({
       base_currency: base,

@@ -52,7 +52,7 @@ async function onRequestPost({ request: req, env }) {
         correlation_id: correlationId,
         after: e.message
       });
-      return Response.json({ error: e.message, correlation_id: correlationId }, { status: 502 });
+      return Response.json({ error: e.message, correlation_id: correlationId }, { status: 400 });
     }
     const repo = neonRepo("PaymentLink");
     const record = await repo.create({
