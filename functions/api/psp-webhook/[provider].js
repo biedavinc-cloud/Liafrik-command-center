@@ -26,7 +26,7 @@ export async function onRequestPost({ request, env, params }) {
   const sql = createSql(env);
 
   const rows = await sql(
-    'SELECT id, secret_value, webhook_secret_value FROM payment_providers WHERE provider = $1 ORDER BY updated_date DESC LIMIT 1',
+    "SELECT id, secret_value, webhook_secret_value FROM payment_providers WHERE provider = $1 AND environment = 'production' ORDER BY updated_date DESC LIMIT 1",
     [provider]
   );
   const config = rows[0];

@@ -49,7 +49,9 @@ async function onRequestPost({ request: req, env }) {
       const updateData = {
         credential_hint: hint,
         configured_by: user.email,
-        secret_value
+        secret_value,
+        status: "configured",
+        enabled: false
       };
       if (webhook_secret_value !== void 0) updateData.webhook_secret_value = webhook_secret_value;
       if (site_id_value !== void 0) updateData.site_id_value = site_id_value;
@@ -158,13 +160,23 @@ async function onRequestPost({ request: req, env }) {
       const { provider, environment, enabled } = body;
       const existing = await repo.filter({ provider, environment: environment || "production" });
       if (existing[0]) await repo.update(existing[0].id, { enabled });
+      await auditRepo.create({
+        actor: user.email,
+        actor_role: user.role,
+        action: enabled ? "psp.enable" : "psp.disable",
+        resource: "payment_provider",
+        resource_id: existing[0]?.id,
+        outcome: "success",
+        risk_level: "medium",
+        correlation_id: `psp_${Date.now()}`
+      });
       return Response.json({ success: true });
     }
     if (operation === "test") {
-      const { provider } = body;
+      const { provider, environment } = body;
       const def = PSP_PROVIDERS[provider];
       if (!def) return Response.json({ error: "Unknown provider" }, { status: 400 });
-      const existing = await repo.filter({ provider });
+      const existing = await repo.filter({ provider, environment: environment || "production" });
       const dbSecret = existing[0]?.secret_value;
       const dbSecretSet = !!dbSecret;
       const secretSet = isPSPSecretSet(provider) || dbSecretSet;

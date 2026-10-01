@@ -110,7 +110,7 @@ export default function PspCenter() {
                 <div className="mt-auto flex flex-wrap gap-2 pt-2">
                   {psp.status === 'connected' ? (
                     <>
-                      <Button size="sm" variant="outline" className="h-7 text-[11px] flex-1" onClick={() => handleAction('test', psp.key, {}, t('psp.test'))} disabled={pspAction.isPending}>
+                      <Button size="sm" variant="outline" className="h-7 text-[11px] flex-1" onClick={() => handleAction('test', psp.key, { environment: psp.environment }, t('psp.test'))} disabled={pspAction.isPending}>
                         <Zap className="h-3 w-3" /> {t('psp.test')}
                       </Button>
                       <Button size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => handleAction('toggle', psp.key, { enabled: !psp.enabled }, psp.enabled ? t('psp.disable') : t('psp.enable'))} disabled={pspAction.isPending}>
