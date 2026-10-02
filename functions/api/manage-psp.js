@@ -1,4 +1,4 @@
-import { createPlatform } from "../_shared/platform.js";
+import { createPlatform, isSafeModeActive } from "../_shared/platform.js";
 import { neonRepo } from "../_shared/neonRepo.js";
 import { PSP_PROVIDERS, LINK_CREATION_SUPPORTED, isPSPSecretSet, getSecretHint, makeHint, verifyPSPCredentials } from "../_shared/pspGateway.js";
 async function onRequestPost({ request: req, env }) {
@@ -9,6 +9,9 @@ async function onRequestPost({ request: req, env }) {
     if (user.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
     const body = await req.json().catch(() => ({}));
     const operation = body.operation || "list";
+    if (["configure", "connect", "disconnect", "toggle"].includes(operation) && await isSafeModeActive(env)) {
+      return Response.json({ error: "Safe Mode is active. All mutations are disabled." }, { status: 423 });
+    }
     const repo = neonRepo("PaymentProvider");
     const auditRepo = neonRepo("AuditEvent");
     if (operation === "list") {

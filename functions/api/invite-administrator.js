@@ -1,4 +1,4 @@
-import { createPlatform } from "../_shared/platform.js";
+import { createPlatform, isSafeModeActive } from "../_shared/platform.js";
 import { neonRepo } from "../_shared/neonRepo.js";
 async function onRequestPost({ request: req, env }) {
   try {
@@ -6,6 +6,7 @@ async function onRequestPost({ request: req, env }) {
     const user = await platform.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
     if (user.role !== "admin") return Response.json({ error: "Forbidden \u2014 SuperAdmin only" }, { status: 403 });
+    if (await isSafeModeActive(env)) return Response.json({ error: "Safe Mode is active. All mutations are disabled." }, { status: 423 });
     const body = await req.json();
     const { email, full_name, global_role, assignments, permissions } = body;
     if (!email || !full_name || !full_name.trim()) {

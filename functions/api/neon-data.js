@@ -44,6 +44,15 @@ export async function onRequestPost({ request: req, env }) {
       return json({ error: 'Forbidden: admin required for mutations' }, 403);
     }
 
+    // Safe Mode blocks all mutations except toggling Safe Mode itself off.
+    if (WRITE_OPS.has(operation) && entity !== 'SystemState') {
+      const sqlCheck = createSql(env);
+      const stateRows = await sqlCheck('SELECT safe_mode_enabled FROM system_states WHERE key = $1 LIMIT 1', ['global']);
+      if (stateRows[0]?.safe_mode_enabled) {
+        return json({ error: 'Safe Mode is active. All mutations are disabled.' }, 423);
+      }
+    }
+
     const sql = createSql(env);
 
     // ── LIST ──

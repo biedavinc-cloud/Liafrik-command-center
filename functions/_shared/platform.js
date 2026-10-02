@@ -2,6 +2,7 @@
 import { neonRepo } from './neonRepo.js';
 import { getUser } from './auth.js';
 import { setEnv } from './runtime.js';
+import { createSql } from './neon.js';
 
 async function sendEmail(env, { to, subject, body, from_name }) {
   if (!env.RESEND_API_KEY) throw new Error('Email is not configured: set RESEND_API_KEY (and EMAIL_FROM) in Cloudflare');
@@ -34,4 +35,10 @@ export function createPlatform(req, env) {
       connectors: { getConnection: (name) => getConnection(env, name) },
     },
   };
+}
+
+export async function isSafeModeActive(env) {
+  const sql = createSql(env);
+  const rows = await sql('SELECT safe_mode_enabled FROM system_states WHERE key = $1 LIMIT 1', ['global']);
+  return !!rows[0]?.safe_mode_enabled;
 }

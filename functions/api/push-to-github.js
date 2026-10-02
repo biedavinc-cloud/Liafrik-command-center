@@ -1,4 +1,4 @@
-import { createPlatform } from "../_shared/platform.js";
+import { createPlatform, isSafeModeActive } from "../_shared/platform.js";
 const OWNER = "biedavinc-cloud";
 const REPO = "Liafrik-command-center";
 async function gh(url, method, ghHeaders, body) {
@@ -19,6 +19,7 @@ async function onRequestPost({ request: req, env }) {
     const user = await platform.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
     if (user.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
+    if (await isSafeModeActive(env)) return Response.json({ error: "Safe Mode is active. All mutations are disabled." }, { status: 423 });
     let accessToken;
     try {
       const conn = await platform.asServiceRole.connectors.getConnection("github");
