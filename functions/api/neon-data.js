@@ -134,6 +134,10 @@ export async function onRequestPost({ request: req, env }) {
 
     // ── UPDATE ──
     if (operation === 'update') {
+      if (table === 'applications' && data.locked !== false) {
+        const current = await sql('SELECT locked FROM applications WHERE id = $1', [id]);
+        if (current[0]?.locked) return json({ error: 'Application is locked. Mutations are disabled.' }, 423);
+      }
       const cols = Object.keys(data).map(ident);
       const setClauses = cols.map((c, i) => `${c} = $${i + 1}`);
       const params = cols.map(c => serializeValue(table, c, data[c]));
