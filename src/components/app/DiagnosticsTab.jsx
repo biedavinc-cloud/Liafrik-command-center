@@ -1,11 +1,49 @@
 import React, { useState } from 'react';
-import { Loader2, PlugZap, CheckCircle, AlertTriangle, XCircle, MinusCircle, RefreshCw } from 'lucide-react';
+import { Loader2, PlugZap, CheckCircle, AlertTriangle, XCircle, MinusCircle, RefreshCw, HeartPulse, Copy } from 'lucide-react';
 import { useT } from '@/lib/i18n/I18nProvider';
 import { useAction } from '@/lib/data/hooks';
-import { runConnectionTest } from '@/lib/services/applications';
+import { runConnectionTest, generateHeartbeatToken } from '@/lib/services/applications';
 import { buildDiagnostics, CHECK_STATUS } from '@/lib/protocol/diagnostics';
 import Panel from '@/components/kit/Panel';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+
+function HeartbeatPanel({ app }) {
+  const { toast } = useToast();
+  const [issued, setIssued] = useState(null);
+  const gen = useAction(() => generateHeartbeatToken(app), ['applications']);
+
+  const copy = (text) => { navigator.clipboard.writeText(text); toast({ title: 'Copied' }); };
+  const curl = issued
+    ? `curl -X POST ${window.location.origin}/api/heartbeat \\\n  -H "Authorization: Bearer ${issued.token}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"application_id":"${app.id}","status":"online"}'`
+    : '';
+
+  return (
+    <Panel
+      title="Heartbeat"
+      subtitle={app.last_heartbeat ? `Last received ${new Date(app.last_heartbeat).toLocaleString()}` : 'No heartbeat received yet \u2014 the status badge on Monitoring stays "unknown" until one arrives.'}
+      actions={<Button size="sm" variant="outline" className="h-8 gap-1.5 text-[12px]" disabled={gen.isPending} onClick={() => gen.mutate(undefined, { onSuccess: setIssued, onError: (e) => toast({ title: 'Failed', description: e.message, variant: 'destructive' }) })}>
+        {gen.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HeartPulse className="h-3.5 w-3.5" />}Generate token
+      </Button>}
+    >
+      {!issued ? (
+        <p className="text-[12px] text-muted-foreground">Generate a token, then have this application call the endpoint below on a schedule (every {app.heartbeat_interval_sec || 60}s or so) to report it's alive.</p>
+      ) : (
+        <div className="space-y-2">
+          <div className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2 text-[11.5px] text-amber-800">This token is shown once. Store it in the app's own secret config \u2014 it can't be retrieved again, only reissued.</div>
+          <div className="flex items-center justify-between rounded-md bg-muted/40 px-3 py-2">
+            <code className="text-[11px] break-all">{issued.token}</code>
+            <Button size="sm" variant="ghost" className="h-7 w-7 shrink-0 p-0" onClick={() => copy(issued.token)}><Copy className="h-3.5 w-3.5" /></Button>
+          </div>
+          <div className="relative rounded-md bg-slate-950 px-3 py-2.5">
+            <pre className="overflow-x-auto text-[11px] text-slate-100 whitespace-pre-wrap">{curl}</pre>
+            <Button size="sm" variant="ghost" className="absolute right-1.5 top-1.5 h-6 w-6 p-0 text-slate-300 hover:text-white" onClick={() => copy(curl)}><Copy className="h-3 w-3" /></Button>
+          </div>
+        </div>
+      )}
+    </Panel>
+  );
+}
 
 const ICON = { pass: CheckCircle, warning: AlertTriangle, fail: XCircle, not_tested: MinusCircle };
 const COLOR = { pass: 'text-emerald-600', warning: 'text-amber-600', fail: 'text-rose-600', not_tested: 'text-muted-foreground' };
@@ -58,6 +96,7 @@ export default function DiagnosticsTab({ app }) {
           </div>
         )}
       </Panel>
+      <HeartbeatPanel app={app} />
     </div>
   );
 }

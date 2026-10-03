@@ -45,6 +45,7 @@ const DDL = [
     heartbeat_interval_sec NUMERIC DEFAULT 60,
     sso_enabled BOOLEAN DEFAULT false,
     client_id TEXT,
+    api_secret_hash TEXT,
     credential_hint TEXT,
     registration_token_hint TEXT,
     registration_status TEXT DEFAULT 'active',

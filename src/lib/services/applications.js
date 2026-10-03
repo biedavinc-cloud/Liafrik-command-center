@@ -4,6 +4,7 @@ import { testConnection } from '@/lib/protocol/connector';
 import { checkCompatibility, generateRegistrationTokenHint } from '@/lib/protocol/compatibility';
 import { recordAudit } from './audit';
 import { emit } from './eventBus';
+import { invokeFunction } from '@/lib/api';
 
 const pick = (o, keys) => Object.fromEntries(keys.map((k) => [k, o[k]]));
 
@@ -92,6 +93,14 @@ function failureReason(result) {
       : `Health check unreachable: ${result?.health?.error || 'connection failed'}`;
   }
   return 'Connection failed';
+}
+
+// Issues a real heartbeat token for this application (shown once). Backed by
+// /api/generate-registration-token, which stores a verifiable hash, not just a hint.
+export async function generateHeartbeatToken(app) {
+  const res = await invokeFunction('generateRegistrationToken', { application_id: app.id });
+  if (res.data?.error) throw new Error(res.data.error);
+  return res.data;
 }
 
 export async function runConnectionTest(app) {
