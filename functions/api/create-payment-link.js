@@ -27,7 +27,7 @@ async function onRequestPost({ request: req, env }) {
     const def = getPSPProvider(provider);
     if (!def) return Response.json({ error: "Unknown PSP provider" }, { status: 400 });
     const pspRepo = neonRepo("PaymentProvider");
-    const { secretKey, siteId } = await getPSPSecretFromDB(provider, pspRepo);
+    const { secretKey, siteId, apiUsername, apiPassword } = await getPSPSecretFromDB(provider, pspRepo);
     if (!secretKey) return Response.json({ error: `${def.secret_key_env} is not configured. Configure it in the PSP Center.` }, { status: 400 });
     const correlationId = `paylink_${Date.now()}`;
     let linkResult;
@@ -40,7 +40,7 @@ async function onRequestPost({ request: req, env }) {
         customer_name,
         reference: reference || correlationId,
         metadata
-      }, { secretKey, siteId });
+      }, { secretKey, siteId, apiUsername, apiPassword });
     } catch (e) {
       const auditRepo2 = neonRepo("AuditEvent");
       await auditRepo2.create({

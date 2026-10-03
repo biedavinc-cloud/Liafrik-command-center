@@ -15,13 +15,20 @@ export default function PspConfigDialog({ psp, open, onOpenChange }) {
   const [secretValue, setSecretValue] = useState('');
   const [webhookSecret, setWebhookSecret] = useState('');
   const [siteId, setSiteId] = useState('');
+  const [apiUsername, setApiUsername] = useState('');
+  const [apiPassword, setApiPassword] = useState('');
   const [showSecret, setShowSecret] = useState(false);
 
   const isCinetPay = psp?.key === 'cinetpay';
+  const isPayUnit = psp?.key === 'payunit';
 
   const handleSave = async () => {
     if (!secretValue || secretValue.length < 6) {
       toast({ title: 'Error', description: 'API key must be at least 6 characters', variant: 'destructive' });
+      return;
+    }
+    if (isPayUnit && (!apiUsername || !apiPassword)) {
+      toast({ title: 'Error', description: 'PayUnit also needs an API Username and API Password', variant: 'destructive' });
       return;
     }
     try {
@@ -31,11 +38,15 @@ export default function PspConfigDialog({ psp, open, onOpenChange }) {
         secret_value: secretValue,
         webhook_secret_value: webhookSecret || undefined,
         site_id_value: isCinetPay ? siteId : undefined,
+        merchant_id: isPayUnit ? apiUsername : undefined,
+        api_password_value: isPayUnit ? apiPassword : undefined,
       });
       toast({ title: 'Secret configured', description: `${psp.display_name} is ready to connect.` });
       setSecretValue('');
       setWebhookSecret('');
       setSiteId('');
+      setApiUsername('');
+      setApiPassword('');
       onOpenChange(false);
     } catch (e) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
@@ -98,6 +109,33 @@ export default function PspConfigDialog({ psp, open, onOpenChange }) {
               />
               <p className="text-[10px] text-muted-foreground">Env var: PSP_CINETPAY_SITE_ID</p>
             </div>
+          )}
+
+          {isPayUnit && (
+            <>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">API Username <span className="text-destructive">*</span></Label>
+                <Input
+                  value={apiUsername}
+                  onChange={(e) => setApiUsername(e.target.value)}
+                  placeholder="PayUnit API username"
+                  className="text-xs h-8"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">API Password <span className="text-destructive">*</span></Label>
+                <Input
+                  type="password"
+                  value={apiPassword}
+                  onChange={(e) => setApiPassword(e.target.value)}
+                  placeholder="PayUnit API password"
+                  className="text-xs h-8"
+                  autoComplete="off"
+                />
+                <p className="text-[10px] text-muted-foreground">PayUnit requires API Key, Username and Password together.</p>
+              </div>
+            </>
           )}
 
           <div className="space-y-1.5">

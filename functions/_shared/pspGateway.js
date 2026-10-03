@@ -134,9 +134,15 @@ async function getPSPSecretFromDB(providerKey, repo) {
   if (providerKey === "cinetpay") {
     siteId = row?.site_id_value || secrets.get("PSP_CINETPAY_SITE_ID") || null;
   }
-  return { secretKey, siteId };
+  let apiUsername = null;
+  let apiPassword = null;
+  if (providerKey === "payunit") {
+    apiUsername = row?.merchant_id || secrets.get("PSP_PAYUNIT_API_USERNAME") || null;
+    apiPassword = row?.api_password_value || secrets.get("PSP_PAYUNIT_API_PASSWORD") || null;
+  }
+  return { secretKey, siteId, apiUsername, apiPassword };
 }
-const LINK_CREATION_SUPPORTED = /* @__PURE__ */ new Set(["stripe", "paystack", "flutterwave", "korapay", "cinetpay"]);
+const LINK_CREATION_SUPPORTED = /* @__PURE__ */ new Set(["stripe", "paystack", "flutterwave", "korapay", "cinetpay", "payunit"]);
 async function createPaymentLink(providerKey, params, options) {
   const provider = PSP_PROVIDERS[providerKey];
   if (!provider) throw new Error(`Unknown PSP provider: ${providerKey}`);
@@ -153,6 +159,8 @@ async function createPaymentLink(providerKey, params, options) {
       return await createKorapayLink(secretKey, params);
     case "cinetpay":
       return await createCinetPayLink(secretKey, params, options?.siteId);
+    case "payunit":
+      return await createPayUnitLink(secretKey, params, { apiUsername: options?.apiUsername, apiPassword: options?.apiPassword, mode: options?.mode });
     default:
       throw new Error(`${provider.display_name} API integration is not yet implemented. Configure the secret and contact support to enable it.`);
   }
@@ -283,6 +291,38 @@ async function createCinetPayLink(secretKey, p, siteIdOverride) {
   }
   return { link_url: data.data.payment_url, provider_reference: data.data.trans_id || p.reference };
 }
+async function createPayUnitLink(secretKey, p, { apiUsername, apiPassword, mode = "live" } = {}) {
+  if (!apiUsername || !apiPassword) {
+    throw new Error("PayUnit requires an API Username and API Password in addition to the API Key \u2014 set them in the PSP Center.");
+  }
+  const auth = btoa(`${apiUsername}:${apiPassword}`);
+  const res = await fetch("https://gateway.payunit.net/api/gateway/initialize", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Basic ${auth}`,
+      "x-api-key": secretKey,
+      "mode": mode
+    },
+    body: JSON.stringify({
+      total_amount: p.amount,
+      currency: p.currency,
+      transaction_id: p.reference || `pu_${Date.now()}`,
+      return_url: p.metadata?.callback_url || "https://liafrik.com",
+      notify_url: p.metadata?.notify_url || "https://liafrik.com"
+    })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data?.status === "FAILED") {
+    throw new Error(`PayUnit API error: ${data?.message || JSON.stringify(data).slice(0, 300)}`);
+  }
+  const payload = data?.data || data;
+  if (!payload?.transaction_url) {
+    throw new Error(`PayUnit API error: no transaction_url in response \u2014 ${JSON.stringify(data).slice(0, 300)}`);
+  }
+  return { link_url: payload.transaction_url, provider_reference: payload.transaction_id || p.reference };
+}
+
 // Verifies credentials with a real, read-only call to the provider — not just "is a value present".
 // Korapay and CinetPay don't have a documented read-only endpoint usable here, so for those two
 // this still only confirms a key is configured; connect()/test() label the result accordingly.

@@ -42,7 +42,7 @@ async function onRequestPost({ request: req, env }) {
       return Response.json(result);
     }
     if (operation === "configure") {
-      const { provider, secret_value, webhook_secret_value, site_id_value, environment } = body;
+      const { provider, secret_value, webhook_secret_value, site_id_value, merchant_id, api_password_value, environment } = body;
       const def = PSP_PROVIDERS[provider];
       if (!def) return Response.json({ error: "Unknown provider" }, { status: 400 });
       if (!secret_value || secret_value.length < 6) return Response.json({ error: "API key must be at least 6 characters" }, { status: 400 });
@@ -58,6 +58,11 @@ async function onRequestPost({ request: req, env }) {
       };
       if (webhook_secret_value !== void 0) updateData.webhook_secret_value = webhook_secret_value;
       if (site_id_value !== void 0) updateData.site_id_value = site_id_value;
+      if (merchant_id !== void 0) updateData.merchant_id = merchant_id;
+      if (api_password_value !== void 0) {
+        updateData.api_password_value = api_password_value;
+        updateData.api_password_hint = makeHint(api_password_value);
+      }
       let result;
       if (existing[0]) {
         result = await repo.update(existing[0].id, updateData);
